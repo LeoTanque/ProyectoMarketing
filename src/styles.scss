@@ -1,1 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
+ //for primeflex grid system
+ @import "primeicons/primeicons.css";
+ @import "assets/layout/styles/layout/layout.scss";
+
+
+ :root {
+     --primary-color: #d4e27b;
+
+     --white-color: #ffffff;
+
+     --text-color: #25201f;
+
+     --active-menu-color: #d4e27b;
+
+   }
+
+   body{
+     font-family: "Rubik", serif;
+   }
