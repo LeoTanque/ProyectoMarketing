@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class ProductService {
-
+  private urlBase = "http://localhost:8080/market-app/productos";
   constructor(private http: HttpClient) { }
 
   getProductsSmall() {
@@ -35,4 +35,5 @@ getProductsWithOrdersSmall() {
         .then(res => res.data as any[])
         .then(data => data);
 }
+
 }

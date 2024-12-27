@@ -1,1 +1,58 @@
-<p>login works!</p>
+
+
+<div class="container" >
+  <p-toast></p-toast>
+  <div class="form-container sign-in-container">
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+
+      <img src="images/logotipo.png" alt="logo" style="width: 80px; align-items: center; justify-content: center;">
+      <img src="images/nombre-marca.png" alt="marca" style="width: 300px; height: auto; margin-top: 10px;">
+
+      <h5>Ingrese sus credenciales</h5>
+      <input pInputText formControlName="usuario_cred" placeholder="Ingrese su usuario"/>
+        <div *ngIf="loginForm.get('usuario_cred')?.invalid && loginForm.get('usuario_cred')?.touched" class="p-error">
+          Usuario es requerido.
+        </div>
+      <!--input type="password" placeholder="Password" formControlName="password" /-->
+      <input type="password" pInputText placeholder="Ingrese su contraseña" formControlName="contrasena_cred" />
+      <div *ngIf="loginForm.get('contrasena_cred')?.invalid && loginForm.get('contrasena_cred')?.touched" class="p-error">
+        Contraseña es requerida.
+      </div>
+
+      <!--p-password id="contra" formControlName="contrasena_cred" placeholder="Ingrese su contraseña" [toggleMask]="true" ></!--p-password>
+      <div-- *ngIf="loginForm.get('contrasena_cred')?.invalid && loginForm.get('contrasena_cred')?.touched" class="p-error">
+        Contraseña es requerida.
+      </div-->
+
+      <p-button label="Acceder" class="m-4" type="submit" [disabled]="loginForm.invalid"></p-button>
+      <!--button-- pButton pRipple class="button" type="submit" label="Sign In" class="p-button-success"></!--button-->
+    </form>
+  </div>
+  <div class="overlay-container">
+    <div class="overlay">
+
+      <div class="overlay-panel overlay-right">
+        <h3 >Bienvenido a nuestro espacio</h3>
+        <h4 class="fw-bold">Innovación y tradición en un solo lugar</h4>
+        <p class="small">
+          Este espacio ha sido diseñado exclusivamente para ti, el corazón que impulsa nuestro negocio. Ya seas administrador o cajero, aquí encontrarás todas las herramientas necesarias para que la operación sea ágil, eficiente y exitosa.
+        </p>
+        <p class="small">
+          Desde la gestión administrativa hasta el control en caja, este sistema combina la tradición de un servicio impecable con la innovación tecnológica para facilitar tu trabajo y llevar nuestro negocio al siguiente nivel.
+        </p>
+        <div>
+          <strong>
+            Todos los derechos reservados &copy; 2025<br>
+            Desarrollado por Brije Industries
+          </strong>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+</div>
+
+
+
+

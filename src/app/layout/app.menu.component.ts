@@ -10,25 +10,39 @@ import { LayoutService } from './service/app.layout.service';
 export class AppMenuComponent implements OnInit {
 
     model: any[] = [];
-
+    usuario: any = {};
+    credenciales: any = {};
     constructor(public layoutService: LayoutService) { }
 
     ngOnInit() {
+      //this.usuario = localStorage.getItem('usuario');
+      const usuarioStr = localStorage.getItem('usuario');
+      if (usuarioStr && typeof usuarioStr === 'string') {
+        try {
+         this.usuario = JSON.parse(usuarioStr);
+       } catch (e) {
+          console.error('Error al parsear los datos del usuario:', e);
+          }
+          }
+          const credencialesStr = localStorage.getItem('credenciales');
+          if (credencialesStr) {
+            try {
+             this.credenciales = JSON.parse(credencialesStr);
+            } catch (e) {
+              console.error('Error al parsear las credenciales:', e);
+             }
+           }
+
         this.model = [
-            /*{
-                label: 'Home',
-                items: [
-                    { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }
-                ]
-            },*/
+
             {
-               // label: 'UI Components',
+
                 items: [
-                    { label: 'Inicio', icon: 'pi pi-home', routerLink: ['/uikit/formlayout'] },
-                    { label: 'Reportes', icon: 'pi pi-fw pi-check-square', routerLink: ['/uikit/input'] },
-                    { label: 'Usuarios', icon: 'pi pi-users', routerLink: ['/uikit/floatlabel'] },
-                    { label: 'Productos', icon: 'pi pi-fw pi-exclamation-circle', routerLink: ['/uikit/invalidstate'] },
-                    { label: 'Proveedores', icon: 'pi pi-barcode', routerLink: ['/uikit/button'] },
+                    { label: 'Inicio', icon: 'pi pi-home', routerLink: ['/dashboard'] },
+                    { label: 'Reportes', icon: 'pi pi-fw pi-check-square', routerLink: ['/dashboard/reportes'] },
+                    { label: 'Usuarios', icon: 'pi pi-users', routerLink: ['/dashboard/usuarios'] },
+                    { label: 'Productos', icon: 'pi pi-fw pi-exclamation-circle', routerLink: ['/dashboard/productos'] },
+                    { label: 'Proveedores', icon: 'pi pi-barcode', routerLink: ['/dashboard/proveedores'] },
                     { label: 'Comprobante', icon: 'pi pi-receipt', routerLink: ['/uikit/table'] },
 
 

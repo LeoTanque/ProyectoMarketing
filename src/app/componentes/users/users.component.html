@@ -1,0 +1,257 @@
+<div class="card">
+  <p-toast></p-toast>
+  <p-toolbar styleClass="mb-6">
+      <ng-template pTemplate="start">
+          <p-button label="New" icon="pi pi-plus" class="mr-2" (onClick)="openNew()"></p-button>
+          <p-button severity="danger" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedUsuarios()" [disabled]="!selectedUsuarios || !selectedUsuarios.length"></p-button>
+      </ng-template>
+
+      <!--ng-template-- pTemplate="end">
+          <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" auto customUpload class="mr-2 inline-block" [chooseButtonProps]="{ severity: 'secondary' }"></p-fileUpload>
+          <p-button label="Export" icon="pi pi-upload" severity="secondary"></p-button>
+      </!--ng-template-->
+  </p-toolbar>
+
+  <p-table
+      #dt
+      [value]="usuarios"
+      [rows]="5"
+      [columns]="cols"
+      [paginator]="true"
+      [globalFilterFields]="['usuario_id', 'nombre_us', 'apellido1_us', 'apellido2_us', 'telefono_us', 'genero_us']"
+      [tableStyle]="{ 'min-width': '75rem' }"
+      [(selection)]="selectedUsuarios"
+      [rowHover]="true"
+      dataKey="usuario_id"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+      [showCurrentPageReport]="true"
+  >
+      <ng-template pTemplate="caption">
+          <div class="flex items-center justify-content-between">
+              <h5 class="m-0">Gestión de Usuarios</h5>
+              <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar...">
+            </p-iconfield>
+          </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th pSortableColumn="usuario_id" style="min-width: 3rem">
+              ID
+            <p-sortIcon field="usuario_id"></p-sortIcon>
+          </th>
+
+            <th pSortableColumn="nombre_us" style="min-width: 5rem">
+                Nombre
+                <p-sortIcon field="nombre_us"></p-sortIcon>
+            </th>
+
+            <th pSortableColumn="apellido1_us" style="min-width: 10rem">
+              1er Apellido
+              <p-sortIcon field="apellido1_us"></p-sortIcon>
+          </th>
+
+            <th pSortableColumn="apellido2_us" style="min-width: 10rem">
+                2do Apellido
+                <p-sortIcon field="apellido2_us"></p-sortIcon>
+            </th>
+
+            <th pSortableColumn="telefono_us" style="min-width: 8rem">
+                Teléfono
+                <p-sortIcon field="telefono_us"></p-sortIcon>
+            </th>
+            <th pSortableColumn="genero_us" style="min-width: 8rem">
+              Género
+              <p-sortIcon field="genero_us"></p-sortIcon>
+          </th>
+
+            <th pSortableColumn="imagen_us" style="min-width: 12rem">
+                Imagen
+                <p-sortIcon field="imagen_us"></p-sortIcon>
+            </th>
+
+            <th style="min-width: 12rem">Acciones</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-usuario>
+      <tr>
+          <td style="width: 3rem">
+              <p-tableCheckbox [value]="usuario"></p-tableCheckbox>
+          </td>
+          <td style="min-width: 12rem">{{ usuario.usuario_id }}</td>
+          <td style="min-width: 16rem">{{ usuario.nombre_us }}</td>
+          <td>{{ usuario.apellido1_us }}</td>
+          <td>{{ usuario.apellido2_us }}</td>
+          <td>{{ usuario.telefono_us }}</td>
+          <td>{{ usuario.genero_us }}</td>
+          <td>
+            <img [src]="usuario.imagen_us" [alt]="usuario.nombre_us" style="width: 64px" class="rounded">
+        </td>
+          <td>
+              <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (onClick)="editUsuario(usuario)"></p-button>
+              <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (onClick)="deleteUsuario(usuario)"></p-button>
+          </td>
+      </tr>
+  </ng-template>
+      <ng-template pTemplate="summary">
+          <div class="flex items-center justify-between">En total hay {{ usuarios ? usuarios.length : 0 }} usuarios.</div>
+      </ng-template>
+  </p-table>
+
+
+
+
+  <p-dialog [(visible)]="usuarioDialog" [style]="{ width: '40%' }" header="Detalles del Usuario" [modal]="true">
+    <ng-template pTemplate="content">
+        <div class="grid flex-col gap-2">
+
+<div class="flex col-12">
+
+  <img [src]="usuario.imagen_us" [alt]="usuario.imagen_us" class="block m-auto pb-4" *ngIf="usuario.imagen_us">
+
+  <div class="col-4">
+    <label for="usuario_id" class="block font-bold mb-3">Id</label>
+    <input type="text" pInputText id="usuario_id" [(ngModel)]="usuario.usuario_id" required autofocus fluid>
+    <small class="text-red-500" *ngIf="submitted && !usuario.usuario_id">El id es requerido.</small>
+</div>
+
+  <div class="col-8">
+      <label for="nombre_us" class="block font-bold mb-3">Nombre</label>
+      <input type="text" pInputText id="nombre_us" [(ngModel)]="usuario.nombre_us" required autofocus fluid>
+      <small class="text-red-500" *ngIf="submitted && !usuario.nombre_us">El nombre es requerido.</small>
+  </div>
+</div>
+
+<div class="flex col-12">
+  <div class="col-6">
+    <label for="apellido1_us" class="block font-bold mb-3">1er Apellido</label>
+    <input type="text" pInputText id="apellido1_us" [(ngModel)]="usuario.apellido1_us" required fluid>
+    <small class="text-red-500" *ngIf="submitted && !usuario.apellido1_us">El 1er Apellido es requerido.</small>
+</div>
+<div class="col-6">
+    <label for="apellido2_us" class="block font-bold mb-3">2do Apellido</label>
+    <input type="text" pInputText id="apellido2_us" [(ngModel)]="usuario.apellido2_us" required fluid>
+    <small class="text-red-500" *ngIf="submitted && !usuario.apellido1_us">El 2do Apellido es requerido.</small>
+</div>
+</div>
+
+<div class="flex col-12 justify-content-center align-items-center">
+  <div class="col-6">
+    <label for="telefono_us" class="block font-bold mb-3">Teléfono</label>
+    <input type="text" pInputText id="telefono_us" [(ngModel)]="usuario.telefono_us" required fluid>
+    <small class="text-red-500" *ngIf="submitted && !usuario.apellido1_us">El telefono es requerido.</small>
+</div>
+
+
+
+<div class="col-6">
+  <span class="block font-bold mb-4">Genero</span>
+  <div class="grid grid-cols-12 gap-4">
+      <div class="flex items-center gap-2 col-span-6">
+          <p-radiobutton id="M" name="genero_us" value="M" [(ngModel)]="usuario.genero_us" />
+          <label for="M">Masculino</label>
+      </div>
+      <div class="flex items-center gap-2 col-span-6">
+          <p-radiobutton id="F" name="genero_us" value="F" [(ngModel)]="usuario.genero_us" />
+          <label for="F">Fememino</label>
+      </div>
+      <small class="text-red-500" *ngIf="submitted && !usuario.apellido1_us">El genero es requerido.</small>
+  </div>
+</div>
+</div>
+
+
+
+
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" text (onClick)="hideDialog()"></p-button>
+        <p-button label="Guardar" icon="pi pi-check" (onClick)="crearUsuario()"></p-button>
+    </ng-template>
+  </p-dialog>
+
+  <p-dialog [(visible)]="editarDialog" [style]="{ width: '40%' }" header="Actualizar Usuario" [modal]="true">
+    <ng-template pTemplate="content">
+      <div class="grid flex-col gap-2">
+
+        <div class="flex col-12">
+
+          <img [src]="usuario.imagen_us" [alt]="usuario.imagen_us" class="block m-auto pb-4" *ngIf="usuario.imagen_us">
+
+          <div class="col-4">
+            <label for="usuario_id" class="block font-bold mb-3">Id</label>
+            <input type="text" pInputText id="usuario_id" [(ngModel)]="usuario.usuario_id" required autofocus fluid>
+            <small class="text-red-500" *ngIf="submitted && !usuario.usuario_id">El id es requerido.</small>
+        </div>
+
+          <div class="col-8">
+              <label for="nombre_us" class="block font-bold mb-3">Nombre</label>
+              <input type="text" pInputText id="nombre_us" [(ngModel)]="usuario.nombre_us" required autofocus fluid>
+              <small class="text-red-500" *ngIf="submitted && !usuario.nombre_us">El nombre es requerido.</small>
+          </div>
+        </div>
+
+        <div class="flex col-12">
+          <div class="col-6">
+            <label for="apellido1_us" class="block font-bold mb-3">1er Apellido</label>
+            <input type="text" pInputText id="apellido1_us" [(ngModel)]="usuario.apellido1_us" required fluid>
+            <small class="text-red-500" *ngIf="submitted && !usuario.apellido1_us">El 1er Apellido es requerido.</small>
+        </div>
+        <div class="col-6">
+            <label for="apellido2_us" class="block font-bold mb-3">2do Apellido</label>
+            <input type="text" pInputText id="apellido2_us" [(ngModel)]="usuario.apellido2_us" required fluid>
+            <small class="text-red-500" *ngIf="submitted && !usuario.apellido1_us">El 2do Apellido es requerido.</small>
+        </div>
+        </div>
+
+        <div class="flex col-12 justify-content-center align-items-center">
+          <div class="col-6">
+            <label for="telefono_us" class="block font-bold mb-3">Teléfono</label>
+            <input type="text" pInputText id="telefono_us" [(ngModel)]="usuario.telefono_us" required fluid>
+            <small class="text-red-500" *ngIf="submitted && !usuario.apellido1_us">El telefono es requerido.</small>
+        </div>
+
+
+
+        <div class="col-6">
+          <span class="block font-bold mb-4">Genero</span>
+          <div class="grid grid-cols-12 gap-4">
+              <div class="flex items-center gap-2 col-span-6">
+                  <p-radiobutton id="M" name="genero_us" value="M" [(ngModel)]="usuario.genero_us" />
+                  <label for="M">Masculino</label>
+              </div>
+              <div class="flex items-center gap-2 col-span-6">
+                  <p-radiobutton id="F" name="genero_us" value="F" [(ngModel)]="usuario.genero_us" />
+                  <label for="F">Fememino</label>
+              </div>
+              <small class="text-red-500" *ngIf="submitted && !usuario.apellido1_us">El genero es requerido.</small>
+          </div>
+        </div>
+        </div>
+
+
+
+
+                </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" text (onClick)="hideDialog()"></p-button>
+        <p-button label="Actualizar" icon="pi pi-check" (onClick)="actualizarUsuario()"></p-button>
+    </ng-template>
+  </p-dialog>
+
+
+
+  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+</div>
+
+
+
+

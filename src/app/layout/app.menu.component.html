@@ -3,9 +3,43 @@
         <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
         <li *ngIf="item.separator" class="menu-separator"></li>
     </ng-container>
-    <li>
-        <a href="https://www.primefaces.org/primeblocks-ng/#/">
-            <img src="assets/layout/images/{{layoutService.config().colorScheme === 'light' ? 'banner-primeblocks' : 'banner-primeblocks-dark'}}.png" alt="Prime Blocks" class="w-full mt-3"/>
-        </a>
-    </li>
+
+
 </ul>
+
+<div class="user-info">
+  <!--p>Imagen: <img [src]="usuario.imagen_us" alt="Imagen del Usuario"></!--p-->
+  <p-button icon="pi pi-user" [rounded]="true" [text]="true" [raised]="true" severity="contrast" class="mr-3" />
+  <!--img src="../../assets/demo/images/avatar/amyelsner.png"
+  alt=""
+
+  class="footer-image"-->
+  <span class="footer-text">{{ usuario.nombre_us }} {{ usuario.apellido1_us }}</span>
+</div>
+<style>
+.layout-menu {
+  display: flex;
+  flex-direction:column;
+  height: 90%;
+  bottom: 0;
+}
+
+.user-info {
+   margin-top: auto;
+   display: flex;
+   align-items: center;
+   padding: 10px;
+   background-color: #f8f9fa;
+   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  }
+  .user-image {
+     width: 50px;
+     height: auto;
+     margin-right: 10px;
+     }
+
+     .user-name {
+      font-size: 16px;
+      color: #333;
+     }
+         </style>

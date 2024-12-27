@@ -6,9 +6,12 @@
 
     </a>
 
-    <button #menubutton class="p-link layout-menu-button layout-topbar-button " (click)="layoutService.onMenuToggle()">
+    <!--button-- #menubutton class="p-link layout-menu-button layout-topbar-button " (click)="layoutService.onMenuToggle()">
         <i class="pi pi-bars"></i>
-    </button>
+    </!--button-->
+    <p-button  #menubutton [text]="true" (click)="layoutService.onMenuToggle()"
+     icon="pi pi-bars" [rounded]="true" class="mr-4" severity="contrast"  />
+
 
     <div class="ml-5">
       <p-iconfield class="">
