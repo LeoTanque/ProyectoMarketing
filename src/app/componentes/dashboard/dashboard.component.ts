@@ -35,7 +35,7 @@ export class DashboardComponent {
     products!: any[];
 
     aperturasCaja: AperturaCaja[] = [];
-
+    botonLabel: string = 'Aperturar +';
     aperturasRelacionadas: AperturaCaja[] = [];
     hayAperturasRelacionadas: boolean = false;
     selectedCaja: AperturaCaja | null = null;
@@ -114,92 +114,11 @@ obtenerAperturasCaja(): void {
          console.log('Apertura de Caja seleccionada:', this.selectedCaja);
         }
 
-        aperturarCaja1() {
-          if (this.selectedCajas && this.selectedCajas.length > 0) {
-            const actualizaciones = this.selectedCajas.map(caja => {
-              console.log('ID de la apertura seleccionada:', caja.caja_id);
-              caja.estado = 'ABIERTO';
-              return this.aperturaCajaService.actualizarEstadoCaja(caja.caja_id, 'ABIERTO').toPromise();
-            });
-
-            Promise.all(actualizaciones)
-              .then((resultados) => {
-                console.log('Estados de cajas actualizados:', resultados);
-                this.messageService.add({
-                  severity: 'success',
-                  summary: 'Successful',
-                  detail: 'Estados de cajas actualizados',
-                  life: 3000
-                });
-                this.obtenerAperturasCaja();  // Volver a obtener las aperturas para actualizar la vista
-              })
-              .catch((error) => {
-                console.error('Error actualizando estados de cajas:', error);
-                this.messageService.add({
-                  severity: 'error',
-                  summary: 'Error',
-                  detail: 'Error actualizando estados de cajas',
-                  life: 3000
-                });
-              });
-          } else {
-            this.messageService.add({
-              severity: 'warn',
-              summary: 'Warning',
-              detail: 'No hay ninguna caja seleccionada',
-              life: 3000
-            });
-          }
-        }
 
 
 
-        aperturarCaja2(): void { if (this.selectedCajas && this.selectedCajas.length > 0) {
-           const actualizaciones = this.selectedCajas.map(caja => { const fechaActual = new Date().toISOString();
-           const datosActualizacion = {
-             caja_id: caja.caja_id,
-             monto_inicial: caja.monto_inicial,
-             monto_final: caja.monto_final,
-              monto_venta: caja.monto_venta,
-              fecha_apertura: caja.fecha_apertura ? caja.fecha_apertura : fechaActual,
-               fecha_cierre: caja.fecha_cierre ? caja.fecha_cierre : fechaActual,
-                estado: 'ABIERTO',
-                comentarios: caja.comentarios,
-                usuario: caja.usuario };
-                 console.log('ID de la apertura seleccionada:', caja.caja_id);
-                 console.log('Datos enviados para la actualización:', datosActualizacion);
-                  caja.estado = 'ABIERTO';
-                  return this.aperturaCajaService.actualizarEstadoCaja(caja.caja_id, 'ABIERTO').toPromise();
-                 });
-                 Promise.all(actualizaciones) .then((resultados) => {
-                   console.log('Estados de cajas actualizados:', resultados);
-                    this.messageService.add({
-                      severity: 'success',
-                      summary: 'Successful',
-                       detail: 'Estados de cajas actualizados',
-                       life: 3000 });
-                        this.obtenerAperturasCaja();
-                       })
-                       .catch((error) => {
-                        console.error('Error actualizando estados de cajas:', error);
-                         this.messageService.add({
-                          severity: 'error',
-                          summary: 'Error',
-                          detail: 'Error actualizando estados de cajas',
-                           life: 3000
-                          });
-                         });
-                         } else {
-                          this.messageService.add({
 
-                            severity: 'warn',
-                            summary: 'Warning',
-                            detail: 'No hay ninguna caja seleccionada', life: 3000
-                          });
-                         }
-                         }
-
-              imprimirAperturaActualizada(apertura: AperturaCaja): void {
+     imprimirAperturaActualizada(apertura: AperturaCaja): void {
       console.log('Datos de la apertura actualizada:', apertura);
    }
 
