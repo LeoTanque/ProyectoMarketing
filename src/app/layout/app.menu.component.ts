@@ -43,7 +43,8 @@ export class AppMenuComponent implements OnInit {
                     { label: 'Usuarios', icon: 'pi pi-users', routerLink: ['/dashboard/usuarios'] },
                     { label: 'Productos', icon: 'pi pi-fw pi-exclamation-circle', routerLink: ['/dashboard/productos'] },
                     { label: 'Proveedores', icon: 'pi pi-barcode', routerLink: ['/dashboard/proveedores'] },
-                    { label: 'Comprobante', icon: 'pi pi-receipt', routerLink: ['/uikit/table'] },
+                    { label: 'Comprobante', icon: 'pi pi-receipt', routerLink: ['/dashboard/comprobante'] },
+                    { label: 'Lote', icon: 'pi pi-receipt', routerLink: ['dashboard/lote'] },
 
 
                 ]

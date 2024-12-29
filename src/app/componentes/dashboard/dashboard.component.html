@@ -1,15 +1,14 @@
  <div class="flex">
-
+<p-toast></p-toast>
   <div>
     <h2>Hola  {{credenciales.usuario_cred}} </h2>
 
     <p>Siempre listo para ayudarte</p>
   </div>
   <div>
-    <p-button label="Aperturar" icon="pi pi-plus" iconPos="right" severity="contrast" (click)="aperturarCaja()" />
+    <p-button label="{{ botonLabel }}" icon="pi pi-plus" iconPos="right" severity="contrast" (click)="confirmAperturarCaja()" />
   </div>
  </div>
-
 
  <div class="grid">
   <p-toast></p-toast>
@@ -175,17 +174,19 @@
         [rows]="5"
         dataKey="caja_id"
         [(selection)]="selectedCajas"
+        (selectionChange)="onSelectCaja()"
         responsiveLayout="scroll">
 
         <ng-template pTemplate="header">
           <tr>
             <th style="width: 3rem">
-              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              <!--p-tableHeaderCheckbox></!--p-tableHeaderCheckbox-->
           </th>
 
             <th>Nombre del Usuario</th>
             <th pSortableColumn="fecha_apertura">Fecha Apertura <p-sortIcon field="fecha_apertura"></p-sortIcon></th>
-            <th pSortableColumn="monto_final">Monto Final <p-sortIcon field="monto_final"></p-sortIcon></th>
+            <th pSortableColumn="fecha_cierre">Fecha Cierre <p-sortIcon field="fecha_cierre"></p-sortIcon></th>
+            <th pSortableColumn="monto_inicial">Monto Inicial <p-sortIcon field="monto_inicial"></p-sortIcon></th>
             <th pSortableColumn="estado">Estado <p-sortIcon field="estado"></p-sortIcon></th>
           </tr>
         </ng-template>
@@ -196,7 +197,8 @@
           </td>
             <td>{{ caja.usuario.nombre_us }}</td>
             <td>{{ caja.fecha_apertura }}</td>
-            <td>{{ caja.monto_final }}</td>
+            <td>{{ caja.fecha_cierre }}</td>
+            <td>{{ caja.monto_inicial }}</td>
             <td>{{ caja.estado }}</td>
           </tr>
         </ng-template>
@@ -255,6 +257,7 @@
   </div>
 
 </div>
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
   </div>
 
 

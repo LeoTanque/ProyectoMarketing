@@ -32,7 +32,7 @@ export default class LoginComponent {
     });
   }
 
-  login(): void {
+  login1(): void {
     if (this.loginForm.valid) {
        const credenciales = new Credenciales(this.loginForm.value.usuario_cred,this.loginForm.value.contrasena_cred);
        console.log('Datos del formulario:', credenciales);
@@ -83,6 +83,37 @@ export default class LoginComponent {
         }
 
 
+        login(): void {
+           if (this.loginForm.valid) {
+             const credenciales = new Credenciales(this.loginForm.value.usuario_cred, this.loginForm.value.contrasena_cred);
+              this.authService.login(credenciales).subscribe(
+                 response => {
+                  this.messageService.add({
+                    severity: 'success',
+                     summary: 'Successful',
+                     detail: 'Usuario logueado con éxito',
+                     life: 3000
+                    });
+                     this.router.navigate(['dashboard']);
+                     localStorage.setItem('usuario', JSON.stringify(response.usuario));
+                     localStorage.setItem('credenciales', JSON.stringify(response.credenciales));
+                    }, error => {
+                       this.mensaje = error; this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                         detail: error,
+                         life: 3000
+                        });
+                       } );
+                       } else {
+                         this.messageService.add({
+                          severity: 'error',
+                          summary: 'Error',
+                          detail: 'Por favor, complete todos los campos requeridos.',
+                          life: 3000
+                        });
+                      }
+                    }
 
 
 

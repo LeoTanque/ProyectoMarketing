@@ -8,13 +8,16 @@ import { ProveedoresComponent } from './componentes/proveedores/proveedores.comp
 import { UsuariosComponent } from './componentes/usuarios/usuarios.component';
 import { ReportesComponent } from './componentes/reportes/reportes.component';
 import { UsersComponent } from './componentes/users/users.component';
+import { AuthGuard } from './guards/auth.guard';
+import { LoginRedirectGuard } from './guards/login-redirect.guard';
 
 export const routes: Routes = [
-  { path: '', component:LoginComponent},
+  { path: '', component:LoginComponent, canActivate: [LoginRedirectGuard]},
 
   {
     path: 'dashboard',
     component: AppLayoutComponent,
+    canActivate: [AuthGuard],
                 children: [
                     { path: '', component:DashboardComponent },
                     {path:'productos', component:ProductosComponent},
@@ -24,6 +27,6 @@ export const routes: Routes = [
 
                 ]
   },
-
+  { path: '**', redirectTo: '', pathMatch: 'full' }
 
 ];

@@ -1,1 +1,131 @@
-<p>productos works!</p>
+
+<div class="button-container">
+  <button pButton type="button" label="Agregar Producto" icon="pi pi-plus" class=" p-button-primary floating-button" severity="contrast" (click)="openAddProductDialog()"></button>
+</div>
+
+<div class="products-container">
+  <div class="products-grid">
+    <div *ngFor="let producto of productoss" class="product-card">
+      <!--img [src]="producto.imagen_prod || 'images/defect.png'" alt="{{ producto.nombre_prod }}" class="product-image"/-->
+      <img src="images/defect.png"  alt="{{ producto.nombre_prod }}" class="product-image" (click)="showDialog(producto.producto_id)">
+      <div class="product-details">
+        <div class="product-info">
+          <span class="product-name">{{ producto.nombre_prod }}</span>
+          <span class="product-brand">{{ producto.marca_prod }}</span>
+        </div>
+        <p class="product-presentacion"> {{ producto.presentacion_prod }}</p>
+
+      <div class="product-datos">
+      <p class="product-categoria">Categoría: {{ producto.categoria.nombre_cat }}</p>
+      <p class="product-proveedor">Proveedor: {{ producto.proveedor.nombre_prov }}</p>
+      <p class="product-id">{{ producto.producto_id }}</p>
+      <span class="product-disponibilidad"><strong>{{ producto.disponibilidad_prod ? 'DISPONIBLE' : 'AGOTADO' }}</strong></span>
+</div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <p-dialog
+  header="Detalle del Producto"
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '60%' }">
+  <div class="flex">
+    <div *ngIf="selectedDetalles.length > 0; else noDetalles">
+      <p-table
+      [value]="selectedDetalles"
+      [tableStyle]="{ 'min-width': '50%' }">
+      <ng-template #header>
+        <tr>
+          <th>ID</th>
+          <th>Fecha de ingreso</th>
+          <th>Fecha de vencimiento</th>
+          <th>Peso</th>
+          <th>Precio</th>
+          <th>Stock</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-detalle>
+        <tr>
+          <td>{{ detalle.detalle_producto_id }}</td>
+          <td>{{ detalle.fecha_ingreso_prod }}</td>
+          <td>{{ detalle.fecha_vencimiento_prod }}</td>
+          <td>{{ detalle.peso_prod }}</td>
+          <td>{{ detalle.precio_prod }}</td>
+          <td>{{ detalle.stock }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <ng-template #noDetalles>
+    <p>No hay lotes para este producto.</p>
+  </ng-template>
+</div>
+</p-dialog>
+
+<p-dialog
+header="Agregar Producto"
+[(visible)]="addProductDialogVisible"
+[modal]="true"
+[style]="{ width: '50%' }">
+ <div class="p-fluid">
+  <div class="p-field">
+    <label for="productId">ID del Producto</label>
+    <input id="productId" type="text" pInputText [(ngModel)]="newProduct.producto_id"/>
+  </div>
+  <div class="p-field">
+    <label for="nombreProd">Nombre</label>
+    <input id="nombreProd" type="text" pInputText [(ngModel)]="newProduct.nombre_prod"/>
+  </div>
+  <div class="p-field">
+    <label for="marcaProd">Marca</label>
+    <input id="marcaProd" type="text" pInputText [(ngModel)]="newProduct.marca_prod"/>
+  </div>
+  <div class="p-field">
+    <label for="presentacionProd">Presentación</label>
+    <input id="presentacionProd" type="text" pInputText [(ngModel)]="newProduct.presentacion_prod"/>
+  </div>
+  <div class="p-field">
+    <label for="disponibilidadProd">Disponibilidad</label>
+
+
+    <div class="card flex justify-center">
+      <div class="flex flex-wrap gap-4">
+          <div class="flex items-center">
+              <p-radiobutton name="pizza" value="true" [(ngModel)]="newProduct.disponibilidad_prod" inputId="DISPONIBLE" />
+              <label for="ingredient1" class="ml-2">DISPONIBLE</label>
+          </div>
+
+          <div class="flex items-center">
+              <p-radiobutton name="pizza" value="false" [(ngModel)]="newProduct.disponibilidad_prod" inputId="AGOTADO" />
+              <label for="ingredient2" class="ml-2">AGOTADO</label>
+          </div>
+
+
+      </div>
+  </div>
+
+  </div>
+  <div class="p-field">
+    <label for="imagenProd">Imagen</label>
+    <input id="imagenProd" type="text" pInputText [(ngModel)]="newProduct.imagen_prod"/>
+  </div>
+  <div class="p-field"> <label for="categoriaId">ID de Categoría</label>
+
+    <!--input id="categoriaId" type="text" pInputText [(ngModel)]="newProduct.categoria.categoria_id"/-->
+
+    <!--p-select [options]="categorias" [(ngModel)]="newProduct.categoria.categoria_id" optionLabel="nombre_cat" placeholder="Seleccione una categoría" class="w-full md:w-56"></!--p-select-->
+    <p-select [options]="categorias" [(ngModel)]="newProduct.categoria.categoria_id" optionLabel="nombre_cat" appendTo="body"  optionValue="categoria_id" placeholder="Seleccione una categoría" class="w-full md:w-56"></p-select>
+  </div>
+  <div class="p-field"> <label for="proveedorId">ID del Proveedor</label>
+    <!--input id="proveedorId" type="text" pInputText [(ngModel)]="newProduct.proveedor.proveedor_id"/-->
+    <p-select [options]="proveedores" [(ngModel)]="newProduct.proveedor.proveedor_id" optionLabel="nombre_prov" appendTo="body"  optionValue="proveedor_id" placeholder="Seleccione un proveedor" class="w-full md:w-56"></p-select>
+  </div>
+  <div class="p-field">
+    <button pButton type="button" label="Guardar" (click)="saveProduct()"></button>
+  </div>
+</div>
+</p-dialog>

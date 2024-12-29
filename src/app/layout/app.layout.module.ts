@@ -20,6 +20,9 @@ import { AppLayoutComponent } from "./app.layout.component";
 import { ButtonModule } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
+import { ToastModule } from 'primeng/toast';
+ import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 @NgModule({
     declarations: [
@@ -46,8 +49,11 @@ import { InputIcon } from 'primeng/inputicon';
         AppConfigModule,
         ButtonModule,
         IconField,
-        InputIcon
+        InputIcon,
+        ToastModule,
+        ConfirmDialogModule
     ],
+    providers: [MessageService, ConfirmationService],
     exports: [AppLayoutComponent]
 })
 export class AppLayoutModule { }
