@@ -25,6 +25,14 @@ export class ProductoService {
      return this.clienteHttp.post<Producto>(this.urlBase, producto);
      }
 
+     actualizarProducto(producto: Producto): Observable<Producto> {
+      return this.clienteHttp.put<Producto>(`${this.urlBase}/${producto.producto_id}`, producto);
+    }
+
+    eliminarProducto(producto_id: string): Observable<void> {
+      return this.clienteHttp.delete<void>(`${this.urlBase}/${producto_id}`);
+    }
+
   obtenerProductosLista(): Observable<DetalleProducto[]>{
     return this.clienteHttp.get<DetalleProducto[]>(this.url)
   }
@@ -32,8 +40,27 @@ export class ProductoService {
   obtenerCategorias(): Observable<Categoria[]> {
      return this.clienteHttp.get<Categoria[]>(this.urlCategorias);
      }
-     obtenerProveedores(): Observable<Proveedor[]> {
-       return this.clienteHttp.get<Proveedor[]>(this.urlProveedores);
-      }
+
+  obtenerProveedores(): Observable<Proveedor[]> {
+
+  return this.clienteHttp.get<Proveedor[]>(this.urlProveedores);
+ }
+
+ agregarDetalleProducto(detalle: DetalleProducto): Observable<DetalleProducto> {
+   return this.clienteHttp.post<DetalleProducto>(this.url, detalle);
+  }
+
+actualizarDetalleProducto(detalle: DetalleProducto): Observable<DetalleProducto> {
+  return this.clienteHttp.put<DetalleProducto>(`${this.url}/${detalle.detalle_producto_id}`, detalle);
+}
+
+eliminarDetalleProducto(id: string): Observable<void> {
+  return this.clienteHttp.delete<void>(`${this.url}/${id}`);
+
+}
+
+obtenerDetalleProductoPorId(detalle_producto_id: string): Observable<DetalleProducto> {
+  return this.clienteHttp.get<DetalleProducto>(`${this.url}/${detalle_producto_id}`);
+}
 
 }

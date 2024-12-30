@@ -3,12 +3,12 @@
   <button pButton type="button" label="Agregar Producto" icon="pi pi-plus" class=" p-button-primary floating-button" severity="contrast"
   (click)="openAddProductDialog()"></button>
 </div>
-
+<p-toast></p-toast>
 <div class="products-container">
   <div class="products-grid">
-    <div *ngFor="let producto of productoss" class="product-card" (click)="showDialog(producto.producto_id)">
+    <div *ngFor="let producto of productoss" class="product-card" >
       <!--img [src]="producto.imagen_prod || 'images/defect.png'" alt="{{ producto.nombre_prod }}" class="product-image"/-->
-      <img src="images/defect.png"  alt="{{ producto.nombre_prod }}" class="product-image" >
+      <img src="images/defect.png"  alt="{{ producto.nombre_prod }}" class="product-image" (click)="showDialog(producto.producto_id)" >
       <div class="product-details">
         <div class="product-info">
           <span class="product-name">{{ producto.nombre_prod }}</span>
@@ -21,16 +21,17 @@
       <p class="product-proveedor">Proveedor: {{ producto.proveedor.nombre_prov }}</p>
       <p class="product-id">{{ producto.producto_id }}</p>
       <span class="product-disponibilidad"><strong>{{ producto.disponibilidad_prod ? 'DISPONIBLE' : 'AGOTADO' }}</strong></span>
-</div>
-
+      </div>
+      <p-button label="Agregar Detalle" icon="pi pi-plus" class="p-button-sm mt-2" (click)="openAddDetalleDialog(producto.producto_id)"></p-button>
       </div>
     </div>
   </div>
+  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 </div>
 
 
   <p-dialog
-  header="Detalle del Producto"
+  header="Mostrar Detalle del Producto"
   [modal]="true"
   [(visible)]="visible"
   [style]="{ width: '60%' }">
@@ -53,15 +54,15 @@
       <ng-template #body let-detalle>
         <tr>
           <td>{{ detalle.detalle_producto_id }}</td>
-          <td>{{ detalle.fecha_ingreso_prod }}</td>
-          <td>{{ detalle.fecha_vencimiento_prod }}</td>
+          <td>{{ detalle.fecha_ingreso_prod | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+          <td>{{ detalle.fecha_vencimiento_prod | date:'yyyy-MM-dd HH:mm:ss' }}</td>
           <td>{{ detalle.peso_prod }}</td>
           <td>{{ detalle.precio_prod }}</td>
           <td>{{ detalle.stock }}</td>
           <td>
             <div class="flex">
-              <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" ></p-button>
-              <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" ></p-button>
+              <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="obtenerDetalleProductoPorId(detalle.detalle_producto_id)" ></p-button>
+              <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="eliminarDetalleProducto(detalle.detalle_producto_id)" ></p-button>
             </div>
 
         </td>
@@ -150,5 +151,52 @@
   </ng-template>
 </p-dialog>
 
+<p-dialog [(visible)]="addDetalleDialogVisible" [style]="{ width: '60%' }" header="Agregar Detalle del Producto" [modal]="true">
+  <ng-template pTemplate="content"> <div class="grid flex-col gap-2">
+    <div class="flex col-12">
+      <div class="col-6">
+    <label for="detalleProductoId" class="block font-bold mb-3">ID del Detalle</label>
+    <input type="text" pInputText id="detalleProductoId" [(ngModel)]="newDetalleProducto.detalle_producto_id" name="detalleProductoId" >
+    <small class="text-red-500" *ngIf="submitted && !newDetalleProducto.detalle_producto_id">El ID del detalle es obligatorio.</small>
+  </div>
+  <div class="col-6"> <label for="productoId" class="block font-bold mb-3">ID del Producto</label>
+    <input type="text" pInputText id="productoId" [(ngModel)]="newDetalleProducto.producto.producto_id" name="productoId" disabled fluid>
+  </div>
+</div>
+<div class="flex col-12">
+  <div class="col-6">
+    <label for="stock" class="block font-bold mb-3">Stock</label>
+    <input type="number" pInputText id="stock" [(ngModel)]="newDetalleProducto.stock" name="stock" required fluid>
+    <small class="text-red-500" *ngIf="submitted && !newDetalleProducto.stock">El stock es obligatorio.</small>
+  </div>
+  <div class="col-6"> <label for="precio" class="block font-bold mb-3">Precio</label>
+    <input type="number" pInputText id="precio" [(ngModel)]="newDetalleProducto.precio_prod" name="precio" required fluid>
+    <small class="text-red-500" *ngIf="submitted && !newDetalleProducto.precio_prod">El precio es obligatorio.</small>
+  </div>
+</div>
+<div class="flex col-12"> <div class="col-6"> <label for="fechaIngreso" class="block font-bold mb-3">Fecha de Ingreso</label>
+  <input type="datetime-local" pInputText id="fechaIngreso" [(ngModel)]="newDetalleProducto.fecha_ingreso_prod" name="fechaIngreso" required fluid>
+  <small class="text-red-500" *ngIf="submitted && !newDetalleProducto.fecha_ingreso_prod">La fecha de ingreso es obligatoria.</small>
+</div>
+<div class="col-6">
+  <label for="fechaVencimiento" class="block font-bold mb-3">Fecha de Vencimiento</label>
+  <input type="datetime-local" pInputText id="fechaVencimiento" [(ngModel)]="newDetalleProducto.fecha_vencimiento_prod" name="fechaVencimiento" required fluid>
+  <small class="text-red-500" *ngIf="submitted && !newDetalleProducto.fecha_vencimiento_prod">La fecha de vencimiento es obligatoria.</small>
+</div>
+</div>
+<div class="flex col-12">
+  <div class="col-6">
+    <label for="peso" class="block font-bold mb-3">Peso</label>
+    <input type="number" pInputText id="peso" [(ngModel)]="newDetalleProducto.peso_prod" name="peso" required fluid>
+    <small class="text-red-500" *ngIf="submitted && !newDetalleProducto.peso_prod">El peso es obligatorio.</small>
+  </div>
+</div>
+</div>
+</ng-template>
+<ng-template pTemplate="footer">
+  <p-button label="Cancelar" icon="pi pi-times" (click)="hideDialog()"></p-button>
+  <p-button label="Guardar" icon="pi pi-check" (click)="saveDetalleProducto()" [disabled]="!newDetalleProducto.detalle_producto_id || !newDetalleProducto.stock || !newDetalleProducto.precio_prod || !newDetalleProducto.fecha_ingreso_prod || !newDetalleProducto.fecha_vencimiento_prod || !newDetalleProducto.peso_prod">
 
-
+  </p-button>
+</ng-template>
+</p-dialog>

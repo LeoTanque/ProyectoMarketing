@@ -44,7 +44,7 @@ interface ExportColumn {
       Tag, RadioButton, Rating, InputTextModule, FormsModule, InputNumber, IconFieldModule, InputIconModule,
        ButtonModule,InputGroup,InputGroupAddonModule ],
 
-      providers: [MessageService, ConfirmationService, UsuarioService, ],
+      providers: [MessageService, ConfirmationService, UsuarioService],
   templateUrl: './users.component.html',
    styles: [
     `:host ::ng-deep .p-dialog .product-image {
