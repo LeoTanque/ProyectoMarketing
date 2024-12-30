@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
 import { Producto } from '../clases/producto';
 import { DetalleProducto } from '../clases/detalle-producto';
 import { Categoria } from '../clases/categoria';
@@ -49,6 +49,20 @@ export class ProductoService {
  agregarDetalleProducto(detalle: DetalleProducto): Observable<DetalleProducto> {
    return this.clienteHttp.post<DetalleProducto>(this.url, detalle);
   }
+
+  agregarDetalleProducto1(detalle: DetalleProducto): Observable<DetalleProducto> {
+    return this.clienteHttp.post<DetalleProducto>(this.url, detalle).pipe(
+      switchMap((detalleProductoGuardado) => {
+        // Actualizar la disponibilidad del producto a "DISPONIBLE"
+        return this.clienteHttp.patch<Producto>(`${this.urlBase}/${detalle.producto.producto_id}`, { disponibilidad_prod: true }).pipe(
+          map(() => detalleProductoGuardado)
+        );
+      })
+    );
+  }
+
+
+
 
 actualizarDetalleProducto(detalle: DetalleProducto): Observable<DetalleProducto> {
   return this.clienteHttp.put<DetalleProducto>(`${this.url}/${detalle.detalle_producto_id}`, detalle);

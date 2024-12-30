@@ -16,10 +16,11 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DatePickerModule } from 'primeng/datepicker';
 @Component({
   selector: 'app-productos',
   imports: [CommonModule, DialogModule, ButtonModule, TableModule, FormsModule, InputTextModule, CheckboxModule,
-     SelectModule,RadioButtonModule, ReactiveFormsModule, ToastModule, ConfirmDialogModule, ToastModule ],
+     SelectModule,RadioButtonModule, ReactiveFormsModule, ToastModule, ConfirmDialogModule, ToastModule, DatePickerModule ],
      providers: [MessageService],
   templateUrl: './productos.component.html',
   styleUrl: './productos.component.scss'
@@ -34,14 +35,16 @@ export default class ProductosComponent implements OnInit{
   categorias!: Categoria[];
   proveedores!: Proveedor[];
   addProductDialogVisible: boolean = false;
+  actualizarDetalleDialogVisible:boolean = false;
   submitted: boolean = false;
   addDetalleDialogVisible: boolean = false;
+
   newProduct: any = {
     producto_id: '',
     nombre_prod: '',
     marca_prod: '',
     presentacion_prod: '',
-    disponibilidad_prod: true,
+    disponibilidad_prod: false,
     imagen_prod: '',
     categoria: {
       categoria_id: '',
@@ -138,28 +141,34 @@ trackByFn(index: number, item: DetalleProducto): string {
    this.submitted = false;
   }
 
-  saveProduct1() {
-    this.servicio.agregarProducto(this.newProduct).subscribe(
-       respuesta => {
-         console.log('Producto guardado', respuesta);
-         this.obtenerProductos();
-         this.addProductDialogVisible = false;
-         this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Producto guardado correctamente.'
-         });
-        },
-        error => {
-          console.error('Error al guardar el producto', error);
-          console.error('Error al guardar el producto', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Hubo un error al guardar el producto.'
-          });
-        } );
-      }
+
+
+editarDetalleProducto(detalle: any) {
+  this.newDetalleProducto = { ...detalle };
+
+  // Formatear las fechas a 'yyyy-MM-ddTHH:mm'
+  if (this.newDetalleProducto.fecha_ingreso_prod) {
+    this.newDetalleProducto.fecha_ingreso_prod = this.formatDateForInput(this.newDetalleProducto.fecha_ingreso_prod);
+  }
+  if (this.newDetalleProducto.fecha_vencimiento_prod) {
+    this.newDetalleProducto.fecha_vencimiento_prod = this.formatDateForInput(this.newDetalleProducto.fecha_vencimiento_prod);
+  }
+
+  console.log('detalle actualizar', detalle);
+  this.actualizarDetalleDialogVisible = true;
+}
+
+formatDateForInput(date: Date): string {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = ('0' + (d.getMonth() + 1)).slice(-2);
+  const day = ('0' + d.getDate()).slice(-2);
+  const hours = ('0' + d.getHours()).slice(-2);
+  const minutes = ('0' + d.getMinutes()).slice(-2);
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
 
 
       saveProduct() {
@@ -201,6 +210,7 @@ trackByFn(index: number, item: DetalleProducto): string {
        this.addProductDialogVisible= false
        this.submitted = false;
        this.addDetalleDialogVisible = false
+       this.actualizarDetalleDialogVisible = false
       }
 
       eliminarProducto(producto_id: string) {
@@ -245,7 +255,10 @@ trackByFn(index: number, item: DetalleProducto): string {
           console.log('Formulario enviado:', this.newDetalleProducto);
           this.servicio.agregarDetalleProducto(this.newDetalleProducto).subscribe( respuesta => {
             console.log('Detalle de producto guardado', respuesta);
-            this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Detalle de producto guardado correctamente.' });
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Éxito',
+              detail: 'Detalle de producto guardado correctamente.' });
              this.obtenerProducts();
              this.addDetalleDialogVisible = false;
             }, error => {
@@ -253,7 +266,10 @@ trackByFn(index: number, item: DetalleProducto): string {
               this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Hubo un error al guardar el detalle de producto.' });
             } );
           } else {
-             this.messageService.add({ severity: 'warn', summary: 'Advertencia', detail: 'Debe llenar todos los campos obligatorios.'
+             this.messageService.add({
+              severity: 'warn',
+              summary: 'Advertencia',
+              detail: 'Debe llenar todos los campos obligatorios.'
 
              });
 
@@ -262,10 +278,63 @@ trackByFn(index: number, item: DetalleProducto): string {
           }
 
 
+          saveDetalleProducto1() {
+            this.submitted = true;
+            if (this.newDetalleProducto.detalle_producto_id &&
+              this.newDetalleProducto.stock &&
+              this.newDetalleProducto.precio_prod &&
+              this.newDetalleProducto.fecha_ingreso_prod &&
+              this.newDetalleProducto.fecha_vencimiento_prod &&
+              this.newDetalleProducto.peso_prod
+            ) {
+              this.newDetalleProducto.fecha_ingreso_prod = this.formatDateToISO(this.newDetalleProducto.fecha_ingreso_prod);
+              this.newDetalleProducto.fecha_vencimiento_prod = this.formatDateToISO(this.newDetalleProducto.fecha_vencimiento_prod);
+              console.log('Formulario enviado:', this.newDetalleProducto);
+              this.servicio.agregarDetalleProducto(this.newDetalleProducto).subscribe(
+                respuesta => {
+                  console.log('Detalle de producto guardado', respuesta);
+                  // Actualizar la disponibilidad del producto localmente a "DISPONIBLE"
+                  const productoIndex = this.productoss.findIndex(p => p.producto_id === this.newDetalleProducto.producto.producto_id);
+                  if (productoIndex !== -1) {
+                    this.productoss[productoIndex].disponibilidad_prod = true;
+                  }
 
-    formatDateToISO(date: string): string { const d = new Date(date); return d.toISOString().split('.')[0] + 'Z'; }
+                  this.messageService.add({
+                    severity: 'success',
+                    summary: 'Éxito',
+                    detail: 'Detalle de producto guardado correctamente.'
+                  });
+                  this.obtenerProductos();
+                  this.addDetalleDialogVisible = false;
+                },
+                error => {
+                  console.error('Error al guardar el detalle de producto', error);
+                  this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Hubo un error al guardar el detalle de producto.'
+                  });
+                }
+              );
+            } else {
+              this.messageService.add({
+                severity: 'warn',
+                summary: 'Advertencia',
+                detail: 'Debe llenar todos los campos obligatorios.'
+              });
+            }
+          }
 
-  actualizarDetalleProducto() {
+
+
+
+
+    formatDateToISO(date: string): string {
+      const d = new Date(date);
+      return d.toISOString().split('.')[0] + 'Z';
+    }
+
+  actualizarDetalleProducto1() {
     this.servicio.actualizarDetalleProducto(this.newDetalleProducto).subscribe(
        respuesta => {
         console.log('Detalle de producto actualizado', respuesta);
@@ -275,6 +344,7 @@ trackByFn(index: number, item: DetalleProducto): string {
           detail: 'Detalle de producto actualizado correctamente.'
         });
         this.obtenerProducts();
+        this.actualizarDetalleDialogVisible = false
       }, error => {
         console.error('Error al actualizar el detalle de producto', error);
         this.messageService.add({
@@ -285,7 +355,49 @@ trackByFn(index: number, item: DetalleProducto): string {
       } );
  }
 
- eliminarDetalleProducto(detalle_producto_id: string) {
+ actualizarDetalleProducto() {
+  this.submitted = true;
+  if (this.newDetalleProducto.detalle_producto_id && this.newDetalleProducto.stock && this.newDetalleProducto.precio_prod && this.newDetalleProducto.fecha_ingreso_prod && this.newDetalleProducto.fecha_vencimiento_prod && this.newDetalleProducto.peso_prod) {
+    this.newDetalleProducto.fecha_ingreso_prod = this.formatDateToISO(this.newDetalleProducto.fecha_ingreso_prod);
+    this.newDetalleProducto.fecha_vencimiento_prod = this.formatDateToISO(this.newDetalleProducto.fecha_vencimiento_prod);
+
+    this.servicio.actualizarDetalleProducto(this.newDetalleProducto).subscribe(
+      respuesta => {
+        console.log('Detalle de producto actualizado', respuesta);
+
+        // Actualizar la lista selectedDetalles localmente
+        const index = this.selectedDetalles.findIndex(d => d.detalle_producto_id === this.newDetalleProducto.detalle_producto_id);
+        if (index !== -1) {
+          this.selectedDetalles[index] = { ...this.newDetalleProducto };
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Detalle de producto actualizado correctamente.'
+        });
+        this.actualizarDetalleDialogVisible = false;
+      },
+      error => {
+        console.error('Error al actualizar el detalle de producto', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Hubo un error al actualizar el detalle de producto.'
+        });
+      }
+    );
+  } else {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Advertencia',
+      detail: 'Debe llenar todos los campos obligatorios.'
+    });
+  }
+}
+
+
+ eliminarDetalleProducto1(detalle_producto_id: string) {
   this.confirmationService.confirm({
     message: `¿Está seguro de que desea eliminar el detalle de producto con ID ${detalle_producto_id}?`,
     header: 'Confirmar', icon: 'pi pi-exclamation-triangle',
@@ -294,6 +406,7 @@ trackByFn(index: number, item: DetalleProducto): string {
          () => {
           console.log(`Detalle de producto eliminado: ${detalle_producto_id}`);
           this.selectedDetalles = this.selectedDetalles.filter(val => val.detalle_producto_id !== detalle_producto_id);
+
           this.messageService.add({
             severity: 'success',
             summary: 'Éxito',
@@ -310,6 +423,42 @@ trackByFn(index: number, item: DetalleProducto): string {
       }
     });
   }
+
+  eliminarDetalleProducto(detalle_producto_id: string) {
+    this.confirmationService.confirm({
+      message: `¿Está seguro de que desea eliminar el detalle de producto con ID ${detalle_producto_id}?`,
+      header: 'Confirmar',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.servicio.eliminarDetalleProducto(detalle_producto_id).subscribe(
+          () => {
+            console.log(`Detalle de producto eliminado: ${detalle_producto_id}`);
+            this.selectedDetalles = this.selectedDetalles.filter(val => val.detalle_producto_id !== detalle_producto_id);
+            this.products = this.products.filter(val => val.detalle_producto_id !== detalle_producto_id);
+
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Éxito',
+              detail: 'Detalle de producto eliminado correctamente.'
+            });
+
+            // Refrescar la lista de detalles
+            this.obtenerProducts();
+          },
+          error => {
+            console.error(`Error eliminando detalle de producto (${detalle_producto_id}):`, error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: `Error eliminando detalle de producto (${detalle_producto_id})`
+            });
+          }
+        );
+      }
+    });
+  }
+
+
 
 
  obtenerDetalleProductoPorId(detalle_producto_id: string) {
