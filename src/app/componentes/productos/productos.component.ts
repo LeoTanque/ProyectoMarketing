@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Producto } from '../../clases/producto';
 import { ProductoService } from '../../services/producto.service';
 import { DialogModule } from 'primeng/dialog';
@@ -17,19 +17,30 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
+import { FiltroService } from '../../services/filtro.service';
+import { Subscription } from 'rxjs';
+
 @Component({
   selector: 'app-productos',
   imports: [CommonModule, DialogModule, ButtonModule, TableModule, FormsModule, InputTextModule, CheckboxModule,
-     SelectModule,RadioButtonModule, ReactiveFormsModule, ToastModule, ConfirmDialogModule, ToastModule, DatePickerModule ],
-     providers: [MessageService],
+     SelectModule,RadioButtonModule, ReactiveFormsModule, ToastModule, ConfirmDialogModule, ToastModule, DatePickerModule, ZXingScannerModule ],
+     providers: [MessageService, ConfirmationService],
   templateUrl: './productos.component.html',
   styleUrl: './productos.component.scss'
 })
 export default class ProductosComponent implements OnInit{
 
+  @Output() codeScanned = new EventEmitter<string>();
  // productForm!: FormGroup;
   productoss!:Producto[];
+
+  scannedProduct: Producto | null = null;
+  filteredProducts: Producto[] = [];
+  filterProductId: string = '';
+
   products!: DetalleProducto[];
+
   visible: boolean = false;
   selectedDetalles: DetalleProducto[] = [];
   categorias!: Categoria[];
@@ -38,6 +49,8 @@ export default class ProductosComponent implements OnInit{
   actualizarDetalleDialogVisible:boolean = false;
   submitted: boolean = false;
   addDetalleDialogVisible: boolean = false;
+
+  scannerVisible: boolean = false;
 
   newProduct: any = {
     producto_id: '',
@@ -66,22 +79,26 @@ export default class ProductosComponent implements OnInit{
     peso_prod: 0
   };
 
+  private filtroSubscription!: Subscription;
 
-  constructor(private fb: FormBuilder,private servicio:ProductoService,
-    private messageService: MessageService, private confirmationService: ConfirmationService){
+  constructor(private fb: FormBuilder,
+    private servicio:ProductoService,
+    private messageService: MessageService,
+    private filtroService: FiltroService,
+    private confirmationService: ConfirmationService){
 
   }
 
 
   ngOnInit(): void {
-
-
-
-
     this.obtenerProductos();
     this.obtenerProducts();
     this.obtenerCategorias();
     this.obtenerProveedores();
+
+    this.filtroSubscription = this.filtroService.filterProductId$.subscribe(filterProductId => {
+      this.filterProductsById(filterProductId);
+    });
   }
 
 
@@ -90,10 +107,14 @@ export default class ProductosComponent implements OnInit{
     this.servicio.obtenerProductos().subscribe(
       (datos => {
         this.productoss = datos;
+        this.filteredProducts = datos;
         console.log('productos', datos)
+        console.log('filtered', this.filteredProducts)
       })
     );
   }
+
+
 
    obtenerProducts(){
     this.servicio.obtenerProductosLista().subscribe(
@@ -120,6 +141,60 @@ export default class ProductosComponent implements OnInit{
              console.log('proveedores', datos);
             } );
           }
+
+
+
+ /* filterProductsById1() {
+    if (this.filterProductId) {
+      this.filteredProducts = this.productoss.filter(
+        producto => producto.producto_id.includes(this.filterProductId));
+
+      } else {
+        this.filteredProducts = [...this.productoss];
+      }
+     }*/
+
+     filterProductsById(filterProductId: string) {
+      this.filterProductId = filterProductId;
+      if (this.filterProductId) {
+        this.filteredProducts = this.productoss.filter(
+          producto => producto.producto_id.includes(this.filterProductId) );
+        } else {
+          this.filteredProducts = [...this.productoss];
+
+      }
+    }
+
+
+     onCodeScanned1(barcode: string) {
+      console.log('Código escaneado:', barcode);
+      this.codeScanned.emit(barcode);
+    }
+
+
+    onCodeScanned(barcode: string) {
+      this.filterProductsById(barcode);
+      this.servicio.obtenerProductoPorId(barcode).subscribe(
+        producto => {
+          this.scannedProduct = producto;
+          this.filterProductsById(barcode);
+        }, error => {
+          console.error('Error al obtener el producto:', error);
+          this.scannedProduct = null;
+        } );
+      }
+
+    /*onCodeScanned(barcode: string) {
+      this.filterProductId = barcode;
+      this.servicio.obtenerProductoPorId(barcode).subscribe(
+        producto => {
+          this.scannedProduct = producto;
+          this.filterProductsById();
+        }, error => {
+          console.error('Error al obtener el producto:', error); this.scannedProduct = null;
+        } );
+      }*/
+
 
   showDialog(producto_id: string) {
      this.selectedDetalles = this.products.filter(
@@ -397,33 +472,6 @@ formatDateForInput(date: Date): string {
 }
 
 
- eliminarDetalleProducto1(detalle_producto_id: string) {
-  this.confirmationService.confirm({
-    message: `¿Está seguro de que desea eliminar el detalle de producto con ID ${detalle_producto_id}?`,
-    header: 'Confirmar', icon: 'pi pi-exclamation-triangle',
-    accept: () => {
-      this.servicio.eliminarDetalleProducto(detalle_producto_id).subscribe(
-         () => {
-          console.log(`Detalle de producto eliminado: ${detalle_producto_id}`);
-          this.selectedDetalles = this.selectedDetalles.filter(val => val.detalle_producto_id !== detalle_producto_id);
-
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Detalle de producto eliminado correctamente.'
-          });
-        }, error => {
-          console.error(`Error eliminando detalle de producto (${detalle_producto_id}):`, error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: `Error eliminando detalle de producto (${detalle_producto_id})`
-          });
-        } );
-      }
-    });
-  }
-
   eliminarDetalleProducto(detalle_producto_id: string) {
     this.confirmationService.confirm({
       message: `¿Está seguro de que desea eliminar el detalle de producto con ID ${detalle_producto_id}?`,
@@ -441,8 +489,6 @@ formatDateForInput(date: Date): string {
               summary: 'Éxito',
               detail: 'Detalle de producto eliminado correctamente.'
             });
-
-            // Refrescar la lista de detalles
             this.obtenerProducts();
           },
           error => {

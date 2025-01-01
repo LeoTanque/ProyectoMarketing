@@ -3,10 +3,40 @@
   <button pButton type="button" label="Agregar Producto" icon="pi pi-plus" class=" p-button-primary floating-button" severity="contrast"
   (click)="openAddProductDialog()"></button>
 </div>
+
+
+
 <p-toast></p-toast>
+
+<!--div-- class="filter-container">
+  <label for="filterProductId" class="block font-bold mb-3">Filtrar por ID de Producto</label>
+  <input type="text" pInputText id="filterProductId" [(ngModel)]="filterProductId" (ngModelChange)="filterProductsById()" name="filterProductId" placeholder="Ingrese ID de producto" autofocus fluid>
+</!--div-->
+
+
+<p-button class="w-full" icon="pi pi-barcode" [rounded]="true" [text]="true" severity="contrast" (click)="scannerVisible = !scannerVisible" />
+
+<div *ngIf="scannerVisible">
+  <zxing-scanner (scanSuccess)="onCodeScanned($event)"></zxing-scanner>
+</div>
+
+
+<!--div-- class="flex justify-center m-4">
+  <input type="text" pInputText [(ngModel)]="filterProductId" (ngModelChange)="filterProductsById($event)" placeholder="Filtrar por ID de producto" />
+</!--div-->
+
+<div *ngIf="scannedProduct">
+  <h3>Producto Escaneado:</h3>
+  <p>Nombre: {{ scannedProduct.nombre_prod }}</p>
+  <p>Marca: {{ scannedProduct.marca_prod }}</p>
+
+</div>
+
+
+
 <div class="products-container">
   <div class="products-grid">
-    <div *ngFor="let producto of productoss" class="product-card" >
+    <div *ngFor="let producto of filteredProducts" class="product-card" >
       <!--img [src]="producto.imagen_prod || 'images/defect.png'" alt="{{ producto.nombre_prod }}" class="product-image"/-->
       <img src="images/defect.png"  alt="{{ producto.nombre_prod }}" class="product-image" (click)="showDialog(producto.producto_id)" >
       <div class="product-details">
@@ -22,7 +52,10 @@
       <p class="product-id">{{ producto.producto_id }}</p>
       <span class="product-disponibilidad"><strong>{{ producto.disponibilidad_prod ? 'DISPONIBLE' : 'AGOTADO' }}</strong></span>
       </div>
-      <p-button label="Agregar Detalle" icon="pi pi-plus" class="p-button-sm mt-2" (click)="openAddDetalleDialog(producto.producto_id)"></p-button>
+      <div class="flex justify-content-center">
+        <p-button label="Agregar Detalle" icon="pi pi-plus" class="p-button-sm mt-2" (click)="openAddDetalleDialog(producto.producto_id)"></p-button>
+      </div>
+
       </div>
     </div>
   </div>

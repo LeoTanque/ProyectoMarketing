@@ -4,14 +4,14 @@ import { UsuarioService } from '../../services/usuario.service';
 import { TableModule } from 'primeng/table';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Dialog } from 'primeng/dialog';
-import { Ripple } from 'primeng/ripple';
+
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
-import { FileUpload } from 'primeng/fileupload';
+
 import { SelectModule } from 'primeng/select';
 import { Tag } from 'primeng/tag';
 import { RadioButton } from 'primeng/radiobutton';
@@ -22,7 +22,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { Table } from 'primeng/table';
 import { DropdownModule } from 'primeng/dropdown';
-import { InputGroup } from 'primeng/inputgroup';
+
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { Usuario } from '../../clases/usuario';
 interface Column {
@@ -39,10 +39,10 @@ interface ExportColumn {
 
 @Component({
   selector: 'app-users',
-  imports: [TableModule, Dialog, Ripple, SelectModule, ToastModule, ToolbarModule,
-      ConfirmDialog, InputTextModule, TextareaModule, CommonModule, FileUpload, DropdownModule,
-      Tag, RadioButton, Rating, InputTextModule, FormsModule, InputNumber, IconFieldModule, InputIconModule,
-       ButtonModule,InputGroup,InputGroupAddonModule ],
+  imports: [TableModule, Dialog, SelectModule, ToastModule, ToolbarModule,
+      ConfirmDialog, InputTextModule, TextareaModule, CommonModule, DropdownModule, RadioButton,
+      InputTextModule, FormsModule, IconFieldModule, InputIconModule,
+       ButtonModule,InputGroupAddonModule ],
 
       providers: [MessageService, ConfirmationService, UsuarioService],
   templateUrl: './users.component.html',

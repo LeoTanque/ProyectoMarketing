@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -23,6 +23,7 @@ import { InputIcon } from 'primeng/inputicon';
 import { ToastModule } from 'primeng/toast';
  import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
 
 @NgModule({
     declarations: [
@@ -51,9 +52,11 @@ import { MessageService, ConfirmationService } from 'primeng/api';
         IconField,
         InputIcon,
         ToastModule,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        ZXingScannerModule
     ],
     providers: [MessageService, ConfirmationService],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     exports: [AppLayoutComponent]
 })
 export class AppLayoutModule { }

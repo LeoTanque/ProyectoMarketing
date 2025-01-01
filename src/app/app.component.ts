@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import ProductosComponent from './componentes/productos/productos.component';
 
 
 @Component({
@@ -10,4 +11,19 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'ProyectoMarketing';
+  @ViewChild(ProductosComponent, { static: true }) productosComponent!: ProductosComponent;
+
+  onCodeScanned(barcode: string) {
+    if (this.productosComponent) {
+      this.productosComponent.onCodeScanned(barcode);
+    }
+  }
+
+
+  onFilterProductIdChange(value: string) {
+    if (this.productosComponent) {
+      this.productosComponent.filterProductsById(value);
+    }
+  }
+
 }

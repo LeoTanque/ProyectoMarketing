@@ -17,12 +17,21 @@
     <div class="ml-5">
       <p-iconfield class="">
         <p-inputicon styleClass="pi pi-search" />
-        <input type="text" pInputText placeholder="Search" />
+        <input type="text" pInputText placeholder="Search" [(ngModel)]="filterProductId" (ngModelChange)="onFilterProductIdChange($event)" />
     </p-iconfield>
     </div>
 
-  <p-button class="w-full" icon="pi pi-barcode" [rounded]="true" [text]="true" severity="contrast" />
-    <button #topbarmenubutton class="p-link layout-topbar-menu-button layout-topbar-button" (click)="layoutService.showProfileSidebar()">
+  <p-button class="w-full" icon="pi pi-barcode" [rounded]="true" [text]="true" severity="contrast" (click)="scannerVisible = !scannerVisible" />
+
+  <div *ngIf="scannerVisible">
+    <zxing-scanner
+    [formats]="allowedFormats"
+    (scanSuccess)="onCodeScanned($event)"
+    (scanFailure)="onScanFailure($event)" >
+  </zxing-scanner>
+  </div>
+
+  <button #topbarmenubutton class="p-link layout-topbar-menu-button layout-topbar-button" (click)="layoutService.showProfileSidebar()">
         <i class="pi pi-ellipsis-v"></i>
     </button>
 

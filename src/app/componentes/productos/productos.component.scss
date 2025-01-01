@@ -82,7 +82,12 @@ color: rgb(20, 103, 76);
   font-size: 12px;
  }
 
+.flex {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 
+}
 
  .floating-button {
   position: fixed;

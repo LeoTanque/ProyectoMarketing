@@ -21,6 +21,10 @@ export class ProductoService {
     return this.clienteHttp.get<Producto[]>(this.urlBase)
   }
 
+  obtenerProductoPorId(productoId: string): Observable<Producto> {
+    return this.clienteHttp.get<Producto>(`${this.urlBase}/${productoId}`);
+  }
+
   agregarProducto(producto: Producto): Observable<Producto> {
      return this.clienteHttp.post<Producto>(this.urlBase, producto);
      }
