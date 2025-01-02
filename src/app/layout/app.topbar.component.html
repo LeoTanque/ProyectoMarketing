@@ -11,7 +11,7 @@
         <i class="pi pi-bars"></i>
     </!--button-->
     <p-button  #menubutton [text]="true" (click)="layoutService.onMenuToggle()"
-     icon="pi pi-bars" [rounded]="true" class="mr-4" severity="contrast"  />
+     icon="pi pi-bars" [rounded]="true" class="mr-4 " severity="contrast"  />
 
 
     <div class="ml-5">
@@ -26,8 +26,7 @@
   <div *ngIf="scannerVisible">
     <zxing-scanner
     [formats]="allowedFormats"
-    (scanSuccess)="onCodeScanned($event)"
-    (scanFailure)="onScanFailure($event)" >
+    (scanSuccess)="onCodeScanned($event)" >
   </zxing-scanner>
   </div>
 

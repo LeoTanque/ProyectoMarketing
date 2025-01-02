@@ -10,6 +10,7 @@ import { ReportesComponent } from './componentes/reportes/reportes.component';
 import { UsersComponent } from './componentes/users/users.component';
 import { AuthGuard } from './guards/auth.guard';
 import { LoginRedirectGuard } from './guards/login-redirect.guard';
+import { LoteComponent } from './componentes/lote/lote.component';
 
 export const routes: Routes = [
   { path: '', component:LoginComponent, canActivate: [LoginRedirectGuard]},
@@ -23,7 +24,8 @@ export const routes: Routes = [
                     {path:'productos', component:ProductosComponent},
                     {path:'proveedores', component:ProveedoresComponent},
                     {path:'reportes', component:ReportesComponent},
-                    {path:'usuarios', component:UsersComponent}
+                    {path:'usuarios', component:UsersComponent},
+                    {path:'lote', component:LoteComponent}
 
                 ]
   },

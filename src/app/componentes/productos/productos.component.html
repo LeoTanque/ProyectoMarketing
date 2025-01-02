@@ -17,7 +17,10 @@
 <p-button class="w-full" icon="pi pi-barcode" [rounded]="true" [text]="true" severity="contrast" (click)="scannerVisible = !scannerVisible" />
 
 <div *ngIf="scannerVisible">
-  <zxing-scanner (scanSuccess)="onCodeScanned($event)"></zxing-scanner>
+  <zxing-scanner
+  (scanSuccess)="onCodeScanned($event)"
+  [formats]="allowedFormats"
+  ></zxing-scanner>
 </div>
 
 
@@ -25,12 +28,7 @@
   <input type="text" pInputText [(ngModel)]="filterProductId" (ngModelChange)="filterProductsById($event)" placeholder="Filtrar por ID de producto" />
 </!--div-->
 
-<div *ngIf="scannedProduct">
-  <h3>Producto Escaneado:</h3>
-  <p>Nombre: {{ scannedProduct.nombre_prod }}</p>
-  <p>Marca: {{ scannedProduct.marca_prod }}</p>
 
-</div>
 
 
 

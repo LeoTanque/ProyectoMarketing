@@ -17,12 +17,6 @@ export class AppTopBarComponent {
     items!: MenuItem[];
     scannerVisible: boolean = false;
     filterProductId: string = '';
-    @Output() filterProductIdChange = new EventEmitter<string>();
-    @ViewChild('menubutton') menuButton!: ElementRef;
-
-    @ViewChild('topbarmenubutton') topbarMenuButton!: ElementRef;
-
-    @ViewChild('topbarmenu') menu!: ElementRef;
 
     allowedFormats = [
       BarcodeFormat.CODE_128,
@@ -30,6 +24,16 @@ export class AppTopBarComponent {
       BarcodeFormat.EAN_13,
       BarcodeFormat.EAN_8
     ];
+    @Output() filterProductIdChange = new EventEmitter<string>();
+
+    @ViewChild('menubutton') menuButton!: ElementRef;
+
+    @ViewChild('topbarmenubutton') topbarMenuButton!: ElementRef;
+
+    @ViewChild('topbarmenu') menu!: ElementRef;
+
+
+
 
     constructor(public layoutService: LayoutService,
       private authService: AutenticacionService,
@@ -63,10 +67,16 @@ export class AppTopBarComponent {
 
 
 
-      onCodeScanned(barcode: string) {
+      onCodeScanned1(barcode: string) {
         console.log('Código escaneado:', barcode);
         this.codeScanned.emit(barcode);
       }
+
+      onCodeScanned(barcode: string) {
+        console.log('Código escaneado:', barcode);
+        this.filtroService.emitCodeScanned(barcode);
+      }
+
 
       onFilterProductIdChange1(value: string) {
         this.filterProductIdChange.emit(value);

@@ -20,7 +20,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { FiltroService } from '../../services/filtro.service';
 import { Subscription } from 'rxjs';
-
+import { BarcodeFormat } from '@zxing/library';
 @Component({
   selector: 'app-productos',
   imports: [CommonModule, DialogModule, ButtonModule, TableModule, FormsModule, InputTextModule, CheckboxModule,
@@ -80,6 +80,13 @@ export default class ProductosComponent implements OnInit{
   };
 
   private filtroSubscription!: Subscription;
+  private scannerSubscription!: Subscription;
+  allowedFormats = [
+    BarcodeFormat.CODE_128,
+    BarcodeFormat.CODE_39,
+    BarcodeFormat.EAN_13,
+    BarcodeFormat.EAN_8
+  ];
 
   constructor(private fb: FormBuilder,
     private servicio:ProductoService,
@@ -99,6 +106,9 @@ export default class ProductosComponent implements OnInit{
     this.filtroSubscription = this.filtroService.filterProductId$.subscribe(filterProductId => {
       this.filterProductsById(filterProductId);
     });
+
+    this.scannerSubscription = this.filtroService.codeScanned$.subscribe(barcode => { this.onCodeScanned(barcode); });
+
   }
 
 
@@ -144,15 +154,7 @@ export default class ProductosComponent implements OnInit{
 
 
 
- /* filterProductsById1() {
-    if (this.filterProductId) {
-      this.filteredProducts = this.productoss.filter(
-        producto => producto.producto_id.includes(this.filterProductId));
 
-      } else {
-        this.filteredProducts = [...this.productoss];
-      }
-     }*/
 
      filterProductsById(filterProductId: string) {
       this.filterProductId = filterProductId;
@@ -166,34 +168,38 @@ export default class ProductosComponent implements OnInit{
     }
 
 
-     onCodeScanned1(barcode: string) {
-      console.log('Código escaneado:', barcode);
-      this.codeScanned.emit(barcode);
-    }
+
+
 
 
     onCodeScanned(barcode: string) {
+
       this.filterProductsById(barcode);
+      console.log('Código escaneado:', barcode);
       this.servicio.obtenerProductoPorId(barcode).subscribe(
         producto => {
           this.scannedProduct = producto;
           this.filterProductsById(barcode);
+          console.log('prod', producto)
         }, error => {
           console.error('Error al obtener el producto:', error);
           this.scannedProduct = null;
         } );
       }
 
-    /*onCodeScanned(barcode: string) {
+    onCodeScanned1(barcode: string) {
       this.filterProductId = barcode;
+      console.log('Código escaneado:', barcode);
       this.servicio.obtenerProductoPorId(barcode).subscribe(
         producto => {
           this.scannedProduct = producto;
-          this.filterProductsById();
+          console.log(producto)
+          this.filterProductsById(barcode);
         }, error => {
-          console.error('Error al obtener el producto:', error); this.scannedProduct = null;
+          console.error('Error al obtener el producto:', error);
+          this.scannedProduct = null;
         } );
-      }*/
+      }
 
 
   showDialog(producto_id: string) {
@@ -298,6 +304,9 @@ formatDateForInput(date: Date): string {
               () => {
                 console.log(`Producto eliminado: ${producto_id}`);
                 this.productoss = this.productoss.filter(val => val.producto_id !== producto_id);
+
+
+
                 this.messageService.add({
                   severity: 'success',
                   summary: 'Éxito',
@@ -338,7 +347,11 @@ formatDateForInput(date: Date): string {
              this.addDetalleDialogVisible = false;
             }, error => {
               console.error('Error al guardar el detalle de producto', error);
-              this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Hubo un error al guardar el detalle de producto.' });
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Hubo un error al guardar el detalle de producto.'
+              });
             } );
           } else {
              this.messageService.add({
@@ -353,52 +366,6 @@ formatDateForInput(date: Date): string {
           }
 
 
-          saveDetalleProducto1() {
-            this.submitted = true;
-            if (this.newDetalleProducto.detalle_producto_id &&
-              this.newDetalleProducto.stock &&
-              this.newDetalleProducto.precio_prod &&
-              this.newDetalleProducto.fecha_ingreso_prod &&
-              this.newDetalleProducto.fecha_vencimiento_prod &&
-              this.newDetalleProducto.peso_prod
-            ) {
-              this.newDetalleProducto.fecha_ingreso_prod = this.formatDateToISO(this.newDetalleProducto.fecha_ingreso_prod);
-              this.newDetalleProducto.fecha_vencimiento_prod = this.formatDateToISO(this.newDetalleProducto.fecha_vencimiento_prod);
-              console.log('Formulario enviado:', this.newDetalleProducto);
-              this.servicio.agregarDetalleProducto(this.newDetalleProducto).subscribe(
-                respuesta => {
-                  console.log('Detalle de producto guardado', respuesta);
-                  // Actualizar la disponibilidad del producto localmente a "DISPONIBLE"
-                  const productoIndex = this.productoss.findIndex(p => p.producto_id === this.newDetalleProducto.producto.producto_id);
-                  if (productoIndex !== -1) {
-                    this.productoss[productoIndex].disponibilidad_prod = true;
-                  }
-
-                  this.messageService.add({
-                    severity: 'success',
-                    summary: 'Éxito',
-                    detail: 'Detalle de producto guardado correctamente.'
-                  });
-                  this.obtenerProductos();
-                  this.addDetalleDialogVisible = false;
-                },
-                error => {
-                  console.error('Error al guardar el detalle de producto', error);
-                  this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Hubo un error al guardar el detalle de producto.'
-                  });
-                }
-              );
-            } else {
-              this.messageService.add({
-                severity: 'warn',
-                summary: 'Advertencia',
-                detail: 'Debe llenar todos los campos obligatorios.'
-              });
-            }
-          }
 
 
 
@@ -409,26 +376,7 @@ formatDateForInput(date: Date): string {
       return d.toISOString().split('.')[0] + 'Z';
     }
 
-  actualizarDetalleProducto1() {
-    this.servicio.actualizarDetalleProducto(this.newDetalleProducto).subscribe(
-       respuesta => {
-        console.log('Detalle de producto actualizado', respuesta);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Detalle de producto actualizado correctamente.'
-        });
-        this.obtenerProducts();
-        this.actualizarDetalleDialogVisible = false
-      }, error => {
-        console.error('Error al actualizar el detalle de producto', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Hubo un error al actualizar el detalle de producto.'
-        });
-      } );
- }
+
 
  actualizarDetalleProducto() {
   this.submitted = true;
@@ -533,5 +481,11 @@ formatDateForInput(date: Date): string {
         peso_prod: 0
       };
       this.addDetalleDialogVisible = true;
+    }
+
+    ngOnDestroy(): void {
+      if (this.scannerSubscription) {
+        this.scannerSubscription.unsubscribe();
+      }
     }
 }
