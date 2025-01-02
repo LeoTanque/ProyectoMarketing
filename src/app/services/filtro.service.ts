@@ -7,10 +7,12 @@ import { Subject } from 'rxjs';
 export class FiltroService {
 
   private filterProductIdSource = new Subject<string>();
-  filterProductId$ = this.filterProductIdSource.asObservable();
   private codeScannedSource = new Subject<string>();
+  private scannerClosedSource = new Subject<void>();
+
+  filterProductId$ = this.filterProductIdSource.asObservable();
   codeScanned$ = this.codeScannedSource.asObservable();
-  constructor() { }
+  scannerClosed$ = this.scannerClosedSource.asObservable();
 
   emitirFiltroProductId(productId: string) {
     this.filterProductIdSource.next(productId);
@@ -18,5 +20,9 @@ export class FiltroService {
 
   emitCodeScanned(barcode: string) {
     this.codeScannedSource.next(barcode);
+  }
+
+  emitScannerClosed() {
+    this.scannerClosedSource.next();
   }
 }

@@ -14,6 +14,7 @@ import { BarcodeFormat } from '@zxing/library';
 export class AppTopBarComponent {
 
   @Output() codeScanned = new EventEmitter<string>();
+  @Output() scannerClosed = new EventEmitter<void>();
     items!: MenuItem[];
     scannerVisible: boolean = false;
     filterProductId: string = '';
@@ -65,22 +66,27 @@ export class AppTopBarComponent {
        this.router.navigate(['/']);
       }
 
-
-
-      onCodeScanned1(barcode: string) {
-        console.log('Código escaneado:', barcode);
-        this.codeScanned.emit(barcode);
-      }
-
       onCodeScanned(barcode: string) {
         console.log('Código escaneado:', barcode);
         this.filtroService.emitCodeScanned(barcode);
       }
 
-
-      onFilterProductIdChange1(value: string) {
-        this.filterProductIdChange.emit(value);
+      toggleScanner1() {
+        this.scannerVisible = !this.scannerVisible;
+        if (!this.scannerVisible) {
+          this.scannerClosed.emit();
+        }
       }
+
+
+      toggleScanner() {
+        this.scannerVisible = !this.scannerVisible;
+        if (!this.scannerVisible) {
+          this.filtroService.emitScannerClosed();
+        }
+      }
+
+
 
       onFilterProductIdChange(value: string) {
         this.filtroService.emitirFiltroProductId(value);

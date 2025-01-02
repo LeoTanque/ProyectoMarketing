@@ -21,7 +21,7 @@
     </p-iconfield>
     </div>
 
-  <p-button class="w-full" icon="pi pi-barcode" [rounded]="true" [text]="true" severity="contrast" (click)="scannerVisible = !scannerVisible" />
+  <p-button class="w-full" icon="pi pi-barcode" [rounded]="true" [text]="true" severity="contrast"  (click)="toggleScanner()" />
 
   <div *ngIf="scannerVisible">
     <zxing-scanner

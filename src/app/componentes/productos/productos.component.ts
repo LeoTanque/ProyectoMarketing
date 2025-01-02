@@ -81,6 +81,7 @@ export default class ProductosComponent implements OnInit{
 
   private filtroSubscription!: Subscription;
   private scannerSubscription!: Subscription;
+  private scannerCloseSubscription!: Subscription;
   allowedFormats = [
     BarcodeFormat.CODE_128,
     BarcodeFormat.CODE_39,
@@ -107,7 +108,13 @@ export default class ProductosComponent implements OnInit{
       this.filterProductsById(filterProductId);
     });
 
-    this.scannerSubscription = this.filtroService.codeScanned$.subscribe(barcode => { this.onCodeScanned(barcode); });
+    this.scannerSubscription = this.filtroService.codeScanned$.subscribe(barcode => {
+      this.onCodeScanned(barcode);
+    });
+
+    this.scannerCloseSubscription = this.filtroService.scannerClosed$.subscribe(() => {
+      this.resetFilteredProducts();
+    });
 
   }
 
@@ -156,7 +163,7 @@ export default class ProductosComponent implements OnInit{
 
 
 
-     filterProductsById(filterProductId: string) {
+     filterProductsById1(filterProductId: string) {
       this.filterProductId = filterProductId;
       if (this.filterProductId) {
         this.filteredProducts = this.productoss.filter(
@@ -167,8 +174,19 @@ export default class ProductosComponent implements OnInit{
       }
     }
 
+    filterProductsById(filterProductId: string) {
+      this.filterProductId = filterProductId;
+      if (this.filterProductId) {
+        this.filteredProducts = this.productoss.filter(
+          producto => producto.producto_id.includes(this.filterProductId) );
+        } else {
+          this.resetFilteredProducts();
+        }
+      }
 
-
+      resetFilteredProducts() {
+        this.filteredProducts = [...this.productoss];
+      }
 
 
 
@@ -200,6 +218,7 @@ export default class ProductosComponent implements OnInit{
           this.scannedProduct = null;
         } );
       }
+
 
 
   showDialog(producto_id: string) {
@@ -483,9 +502,16 @@ formatDateForInput(date: Date): string {
       this.addDetalleDialogVisible = true;
     }
 
+
+
+
     ngOnDestroy(): void {
       if (this.scannerSubscription) {
         this.scannerSubscription.unsubscribe();
+      }
+
+      if (this.scannerCloseSubscription) {
+        this.scannerCloseSubscription.unsubscribe();
       }
     }
 }
