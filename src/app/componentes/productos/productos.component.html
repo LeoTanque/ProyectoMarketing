@@ -14,7 +14,7 @@
 </!--div-->
 
 
-<p-button class="w-full" icon="pi pi-barcode" [rounded]="true" [text]="true" severity="contrast" (click)="scannerVisible = !scannerVisible" />
+<p-button class="w-full" icon="pi pi-barcode" [rounded]="true" [text]="true" severity="contrast" (click)="toggleScanner()" />
 
 <div *ngIf="scannerVisible">
   <zxing-scanner
@@ -50,8 +50,10 @@
       <p class="product-id">{{ producto.producto_id }}</p>
       <span class="product-disponibilidad"><strong>{{ producto.disponibilidad_prod ? 'DISPONIBLE' : 'AGOTADO' }}</strong></span>
       </div>
-      <div class="flex justify-content-center">
-        <p-button label="Agregar Detalle" icon="pi pi-plus" class="p-button-sm mt-2" (click)="openAddDetalleDialog(producto.producto_id)"></p-button>
+      <div class="flex justify-content-between">
+        <p-button label="Detalle" icon="pi pi-plus" class="p-button-sm " (click)="openAddDetalleDialog(producto.producto_id)"></p-button>
+        <p-button label="Delete" icon="pi pi-trash" severity="danger"  (click)="eliminarProducto(producto.producto_id)"></p-button>
+        <!--p-button-- icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"  (click)="eliminarProducto(producto.producto_id)"></!--p-button-->
       </div>
 
       </div>

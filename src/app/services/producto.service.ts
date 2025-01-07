@@ -81,4 +81,5 @@ obtenerDetalleProductoPorId(detalle_producto_id: string): Observable<DetalleProd
   return this.clienteHttp.get<DetalleProducto>(`${this.url}/${detalle_producto_id}`);
 }
 
+
 }

@@ -160,7 +160,12 @@ export default class ProductosComponent implements OnInit{
           }
 
 
-
+          toggleScanner() {
+            this.scannerVisible = !this.scannerVisible;
+            if (!this.scannerVisible) {
+              this.filtroService.emitScannerClosed();
+            }
+          }
 
 
      filterProductsById1(filterProductId: string) {
@@ -229,7 +234,8 @@ export default class ProductosComponent implements OnInit{
          console.log('No hay lotes para este producto.');
          } else {
           console.log('Detalles del producto:', this.selectedDetalles);
-         } }
+         }
+        }
 
 
 trackByFn(index: number, item: DetalleProducto): string {
@@ -313,35 +319,49 @@ formatDateForInput(date: Date): string {
        this.actualizarDetalleDialogVisible = false
       }
 
+
       eliminarProducto(producto_id: string) {
+        this.selectedDetalles = this.products.filter(detalle => detalle.producto.producto_id === producto_id);
+        if (this.selectedDetalles.length > 0) {
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Advertencia',
+            detail: 'Este producto tiene detalles agregados. Debe eliminar los detalles antes de eliminar el producto.'
+          });
+        } else {
+          this.confirmationService.confirm({
+            message: `¿Está seguro de que desea eliminar el producto con ID ${producto_id}?`,
+            header: 'Confirmar',
+            icon: 'pi pi-exclamation-triangle',
+            accept:
+            () => {
+              this.servicio.eliminarProducto(producto_id).subscribe(
+                 () => {
+                  this.productoss = this.productoss.filter(val => val.producto_id !== producto_id);
+                  this.filteredProducts = this.filteredProducts.filter(val => val.producto_id !== producto_id);
+                  this.messageService.add({
+                    severity: 'success',
+                    summary: 'Éxito',
+                    detail: 'Producto eliminado correctamente.'
+                  });
+                 }, error => {
+                  this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: `Error eliminando producto (${producto_id})`
+                  });
+                } );
+              }
+            });
+          }
+        }
+
+
+      eliminarProducto1(producto_id: string) {
         this.confirmationService.confirm({
           message: `¿Está seguro de que desea eliminar el producto con ID ${producto_id}?`,
-          header: 'Confirmar',
-          icon: 'pi pi-exclamation-triangle',
-          accept: () => {
-            this.servicio.eliminarProducto(producto_id).subscribe(
-              () => {
-                console.log(`Producto eliminado: ${producto_id}`);
-                this.productoss = this.productoss.filter(val => val.producto_id !== producto_id);
-
-
-
-                this.messageService.add({
-                  severity: 'success',
-                  summary: 'Éxito',
-                  detail: 'Producto eliminado correctamente.'
-                });
-              }, error => {
-                console.error(`Error eliminando producto (${producto_id}):`, error);
-                this.messageService.add({
-                  severity: 'error',
-                  summary: 'Error',
-                  detail: `Error eliminando producto (${producto_id})`
-                });
-              } );
-            }
-          });
-        }
+          header: 'Confirmar', icon: 'pi pi-exclamation-triangle', accept: () => { this.servicio.eliminarProducto(producto_id).subscribe( () => { console.log(`Producto eliminado: ${producto_id}`); this.productoss = this.productoss.filter(val => val.producto_id !== producto_id); this.filteredProducts = this.filteredProducts.filter(val => val.producto_id !== producto_id);
+      this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Producto eliminado correctamente.' }); }, error => { console.error(`Error eliminando producto (${producto_id}):`, error); this.messageService.add({ severity: 'error', summary: 'Error', detail: `Error eliminando producto (${producto_id})` }); } ); } }); }
 
 
     saveDetalleProducto() {
