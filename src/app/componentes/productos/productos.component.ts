@@ -86,7 +86,8 @@ export default class ProductosComponent implements OnInit{
     BarcodeFormat.CODE_128,
     BarcodeFormat.CODE_39,
     BarcodeFormat.EAN_13,
-    BarcodeFormat.EAN_8
+    BarcodeFormat.EAN_8,
+
   ];
 
   constructor(private fb: FormBuilder,

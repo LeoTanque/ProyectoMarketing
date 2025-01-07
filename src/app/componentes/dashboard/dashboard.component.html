@@ -75,49 +75,107 @@
 
 
       <div class="card">
-        <div class="flex align-items-center justify-content-between mb-4">
-            <h5>Realizar Venta</h5>
-            <div>
-                <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-plain" (click)="menu.toggle($event)"></button>
-                <p-menu #menu [popup]="true" [model]="items"></p-menu>
-            </div>
-        </div>
+  <div class="column justify-center">
+    <p-select
+    [options]="comprobantesRelacionadas"
+    [(ngModel)]="comprobanteSeleccionado.comprobante_id"
+    optionLabel="comprobante_id"
+    appendTo="body"
+    optionValue="comprobante_id"
+    placeholder="ID Comprobante"
+    (onChange)="onSelectChange($event)"
+    name="comprobante_id"></p-select>
+    <input type="text" pInputText [(ngModel)]="comprobanteSeleccionado.tipo_comp" placeholder="Tipo de comprobante"/>
+    <input type="text" pInputText [(ngModel)]="comprobanteSeleccionado.usuario.nombre_us" placeholder="Vendedor"/>
 
-        <span class="block text-600 font-medium mb-3">TODAY</span>
-        <ul class="p-0 mx-0 mt-0 mb-4 list-none">
-            <li class="flex align-items-center py-2 border-bottom-1 surface-border">
-                <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
-                    <i class="pi pi-dollar text-xl text-blue-500"></i>
-                </div>
-                <span class="text-900 line-height-3">Richard Jones
-            <span class="text-700"> has purchased a blue t-shirt for <span class="text-blue-500">79$</span></span>
-        </span>
-            </li>
-            <li class="flex align-items-center py-2">
-                <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-orange-100 border-circle mr-3 flex-shrink-0">
-                    <i class="pi pi-download text-xl text-orange-500"></i>
-                </div>
-                <span class="text-700 line-height-3">Your request for withdrawal of <span class="text-blue-500 font-medium">2500$</span> has been initiated.</span>
-            </li>
-        </ul>
 
-        <span class="block text-600 font-medium mb-3">YESTERDAY</span>
-        <ul class="p-0 m-0 list-none">
-            <li class="flex align-items-center py-2 border-bottom-1 surface-border">
-                <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
-                    <i class="pi pi-dollar text-xl text-blue-500"></i>
-                </div>
-                <span class="text-900 line-height-3">Keyser Wick
-            <span class="text-700"> has purchased a black jacket for <span class="text-blue-500">59$</span></span>
-        </span>
-            </li>
-            <li class="flex align-items-center py-2 border-bottom-1 surface-border">
-                <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-pink-100 border-circle mr-3 flex-shrink-0">
-                    <i class="pi pi-question text-xl text-pink-500"></i>
-                </div>
-                <span class="text-900 line-height-3">Jane Davis<span class="text-700"> has posted a new questions about your product.</span></span>
-            </li>
-        </ul>
+    <input type="text" pInputText [(ngModel)]="comprobanteSeleccionado.cliente.nombre_cli" placeholder="Cliente"/>
+  </div>
+
+
+
+<!--div class="floating-cart-button" (click)="toggleCartModal()">
+  <i class="pi pi-shopping-cart"></i>
+  <div class="cart-counter">{{ scannedProducts.length }}</div>
+</!--div>
+
+<div-- class="carrito-icono" (click)="toggleCartModal()">
+  <i class="pi pi-shopping-cart"></i>
+  <span class="contador">{{ scannedProducts.length }}</span>
+</div-->
+
+
+<p-table #dt
+[value]="detallesFiltrados"
+[rows]="5"
+[columns]="cols"
+[paginator]="true"
+[globalFilterFields]="['cantidad', 'producto.nombre_prod', 'subtotal']"
+[tableStyle]="{ 'width': '100%' }"
+[(selection)]="selectedComprobantes"
+[rowHover]="true"
+dataKey="detalle_comprobante_id"
+currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+[showCurrentPageReport]="true" >
+
+<ng-template pTemplate="caption">
+  <div class="flex2 items-center justify-content-between">
+    <h5 class="m-0">Ventas</h5>
+    <div class="flex items-center">
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-search" />
+        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..."> </p-iconfield>
+        <p-button icon="pi pi-search" [rounded]="true" [text]="true" severity="success" (click)="toggleProductModal()" />
+        <!--p-button-- icon="pi pi-barcode" [rounded]="true" [text]="true" severity="contrast" (click)="toggleScanner()"></!--p-button-->
+
+      </div>
+      <!--div-- *ngIf="scannerVisible" class="scanner-container">
+        <zxing-scanner [formats]="allowedFormats" (scanSuccess)="onCodeScanned($event)" ></zxing-scanner>
+      </!--div-->
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="cantidad" style="min-width: 20%"> Cantidad
+        <p-sortIcon field="cantidad"></p-sortIcon>
+      </th>
+      <th pSortableColumn="producto.nombre_prod"  style="width: 20%" > Descripción
+        <p-sortIcon field="producto.nombre_prod"></p-sortIcon>
+      </th>
+      <th pSortableColumn="subtotal" style="width: 20%"> Precio
+        <p-sortIcon field="subtotal"></p-sortIcon>
+      </th>
+      <th pSortableColumn="comprobante.total_comp" style="width: 20%">Total
+        <p-sortIcon field="comprobante.total_comp"></p-sortIcon>
+      </th>
+      <th style="width: 20%;" >Acciones</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-detalle>
+    <tr>
+      <td >{{ detalle.cantidad }}</td>
+      <td >{{ detalle.producto.nombre_prod }}</td>
+      <td>{{ detalle.subtotal }}</td>
+      <td>{{ detalle.cantidad * detalle.subtotal| currency }}</td>
+      <td>
+        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editarDetalleComprobante(detalle)" ></p-button>
+        <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="eliminarDetalleComprobante(detalle.detalle_comprobante_id)" ></p-button>
+      </td>
+    </tr>
+  </ng-template>
+
+
+
+  <ng-template pTemplate="summary">
+    <div class="flex items-center justify-between">En total hay {{ detallesFiltrados ? detallesFiltrados.length : 0 }} detalles.
+
+  </div>
+</ng-template>
+</p-table>
+
+
+
+
     </div>
 
 
@@ -126,44 +184,6 @@
 
   <div class="col-12 xl:col-4">
 
-
-    <!--div class="card">
-      <h5>Puntos de Venta</h5>
-      <p-table
-       [value]="aperturasCaja"
-       [paginator]="true"
-       [rows]="5"
-       responsiveLayout="scroll">
-          <ng-template pTemplate="header">
-              <tr>
-                  <th>Image</th>
-                  <th pSortableColumn="name">Id <p-sortIcon field="caja_id"></p-sortIcon></th>
-                  <th pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
-                  <th pSortableColumn="name">Id <p-sortIcon field="caja_id"></p-sortIcon></th>
-                  <th pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
-                  <th pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
-                  <th pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
-                  <th>View</th>
-              </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-caja>
-              <tr>
-                  <td style="width: 15%; min-width: 5rem;">
-                      <img src="assets/demo/images/product/{{caja.image}}" class="shadow-4" alt="{{caja.name}}" width="50">
-                  </td>
-                  <td style="width: 35%; min-width: 7rem;">{{caja.caja_id}}</td>
-                  <td style="width: 35%; min-width: 8rem;">{{caja.estado}}</td>
-                  <td style="width: 35%; min-width: 7rem;">{{caja.fecha_apertura}}</td>
-                  <td style="width: 35%; min-width: 8rem;">{{caja.estado}}</td>
-                  <td style="width: 35%; min-width: 7rem;">{{caja.caja_id}}</td>
-                  <td style="width: 35%; min-width: 8rem;">{{caja.estado}}</td>
-                  <td style="width: 15%;">
-                      <button pButton pRipple type="button" icon="pi pi-search" class="p-button p-component p-button-text p-button-icon-only"></button>
-                  </td>
-              </tr>
-          </ng-template>
-      </p-table>
-  </!--div-->
 
   <div class="card">
     <h5>Puntos de Venta</h5>
@@ -180,10 +200,10 @@
         <ng-template pTemplate="header">
           <tr>
             <th style="width: 3rem">
-              <!--p-tableHeaderCheckbox></!--p-tableHeaderCheckbox-->
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
           </th>
 
-            <th>Nombre del Usuario</th>
+            <th pSortableColumn="nombre_us">Nombre del Usuario <p-sortIcon field="nombre_us"></p-sortIcon></th>
             <th pSortableColumn="fecha_apertura">Fecha Apertura <p-sortIcon field="fecha_apertura"></p-sortIcon></th>
             <th pSortableColumn="fecha_cierre">Fecha Cierre <p-sortIcon field="fecha_cierre"></p-sortIcon></th>
             <th pSortableColumn="monto_inicial">Monto Inicial <p-sortIcon field="monto_inicial"></p-sortIcon></th>
@@ -237,28 +257,170 @@
           </li>
       </ul>
 
-      <span class="block text-600 font-medium mb-3">YESTERDAY</span>
-      <ul class="p-0 m-0 list-none">
-          <li class="flex align-items-center py-2 border-bottom-1 surface-border">
-              <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
-                  <i class="pi pi-dollar text-xl text-blue-500"></i>
-              </div>
-              <span class="text-900 line-height-3">Keyser Wick
-          <span class="text-700"> has purchased a black jacket for <span class="text-blue-500">59$</span></span>
-      </span>
-          </li>
-          <li class="flex align-items-center py-2 border-bottom-1 surface-border">
-              <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-pink-100 border-circle mr-3 flex-shrink-0">
-                  <i class="pi pi-question text-xl text-pink-500"></i>
-              </div>
-              <span class="text-900 line-height-3">Jane Davis<span class="text-700"> has posted a new questions about your product.</span></span>
-          </li>
-      </ul>
+
   </div>
+
+
 
 </div>
 <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
   </div>
 
 
+<!--div-- class="shopping-cart" [ngClass]="{ 'visible': cartModalVisible }">
+  <div class="shopping-cart-products">
+    <div *ngFor="let product of scannedProducts, let i = index" class="shopping-cart-product">
+
+        <div class="product-info">
+          <div>
+            <h3>{{  product.nombre_prod  }}</h3>
+            <p>{{product.marca_prod }}</p>
+
+          </div>
+
+        </div>
+        <div class="product-count">
+          <button >-</button>
+          <span>{{ product.cantidad }}</span>
+          <button >+</button>
+          <button >Remove</button>
+
+        </div>
+
+
+    </div>
+  </div>
+  <div class="shopping-cart-summary">
+    <div>Total: <b></b></div>
+    <div><button >Purchase</button></div>
+  </div>
+</!--div-->
+
+
+
+<p-dialog [(visible)]="productModalVisible" [style]="{ width: '60%' }" header="Editar Detalle del Comprobante" [modal]="true">
+  <ng-template pTemplate="content">
+    <div class="grid flex-col gap-2">
+      <div class="flex col-12">
+        <div class="col-4">
+          <label for="comprobanteId" class="block font-bold mb-3">ID del Comprobante</label>
+          <input type="text" pInputText id="comprobanteId" [(ngModel)]="detalleComprobante.comprobante.comprobante_id" name="comprobante_id" [readonly]="true" fluid>
+          <small class="text-red-500" *ngIf="submitted && !detalleComprobante.comprobante.comprobante_id">El ID del comprobante es obligatorio.</small>
+        </div>
+
+        <div class="col-4">
+          <label for="clienteId" class="block font-bold mb-3">ID del Detalle</label>
+          <input type="text" pInputText id="clienteId" [(ngModel)]="detalleComprobante.detalle_comprobante_id" name="detalle_comprobante_id" required fluid>
+          <small class="text-red-500" *ngIf="submitted && !detalleComprobante.detalle_comprobante_id">El ID del detalle es obligatorio.</small>
+        </div>
+      </div>
+
+      <div class="flex col-12">
+        <div class="col-6">
+          <label for="productId" class="block font-bold mb-3">Producto</label>
+          <div class="p-inputgroup">
+            <input type="text" pInputText id="productId" [(ngModel)]="detalleComprobante.producto.producto_id" name="producto_id" required fluid>
+            <p-button icon="pi pi-barcode" [rounded]="true" [text]="true" severity="contrast" (click)="toggleScanner1()"></p-button>
+          </div>
+          <small class="text-red-500" *ngIf="submitted && !detalleComprobante.producto.producto_id">El ID del producto es obligatorio.</small>
+          <div *ngIf="scannerVis" class="scanner-container">
+            <zxing-scanner [formats]="allowedFormats" (scanSuccess)="onCodeScanned($event)"></zxing-scanner>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <label for="cantidad" class="block font-bold mb-3">Cantidad</label>
+          <div class="product-count flex align-items-center">
+            <button pButton icon="pi pi-minus" class="p-button-rounded p-button-secondary"  (click)="decrementarCantidad()"></button>
+            <span class="mx-3">{{ detalleComprobante.cantidad }}</span>
+            <button pButton icon="pi pi-plus" class="p-button-rounded p-button-secondary" (click)="incrementarCantidad()"></button>
+          </div>
+          <small class="text-red-500" *ngIf="submitted && !detalleComprobante.cantidad">La cantidad es obligatoria.</small>
+        </div>
+      </div>
+
+      <div class="flex col-12">
+        <div class="col-6">
+          <label for="subtotal" class="block font-bold mb-3">Subtotal</label>
+          <input type="number" pInputText id="subtotal" [(ngModel)]="detalleComprobante.subtotal" name="subtotal" required fluid>
+          <small class="text-red-500" *ngIf="submitted && !detalleComprobante.subtotal">El subtotal es obligatorio.</small>
+        </div>
+        <div class="col-6">
+          <label for="tipoPago" class="block font-bold mb-3">Tipo de Pago</label>
+          <p-select [options]="tiposPago" [(ngModel)]="detalleComprobante.tipo_pago" optionLabel="name" appendTo="body" optionValue="value" placeholder="Seleccione un tipo de pago" name="tipo_pago" required></p-select>
+          <small class="text-red-500" *ngIf="submitted && !detalleComprobante.tipo_pago">El tipo de pago es obligatorio.</small>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" icon="pi pi-times" (click)="toggleProductModal()"></p-button>
+    <p-button label="Guardar" icon="pi pi-check" (click)="guardarDetalleComprobante()" [disabled]="!isFormValid()"  ></p-button>
+  </ng-template>
+</p-dialog>
+
+
+
+<p-dialog [(visible)]="editModalVisible" [style]="{ width: '60%' }" header="Editar Detalle del Comprobante" [modal]="true">
+  <ng-template pTemplate="content">
+    <div class="grid flex-col gap-2">
+      <div class="flex col-12">
+        <div class="col-4">
+          <label for="comprobanteId" class="block font-bold mb-3">ID del Comprobante</label>
+          <input type="text" pInputText id="comprobanteId" [(ngModel)]="detalleComprobante.comprobante.comprobante_id" name="comprobante_id" [readonly]="true" fluid>
+          <small class="text-red-500" *ngIf="submitted && !detalleComprobante.comprobante.comprobante_id">El ID del comprobante es obligatorio.</small>
+        </div>
+
+        <div class="col-4">
+          <label for="clienteId" class="block font-bold mb-3">ID del Detalle</label>
+          <input type="text" pInputText id="clienteId" [(ngModel)]="detalleComprobante.detalle_comprobante_id" name="detalle_comprobante_id" required fluid>
+          <small class="text-red-500" *ngIf="submitted && !detalleComprobante.detalle_comprobante_id">El ID del detalle es obligatorio.</small>
+        </div>
+      </div>
+
+      <div class="flex col-12">
+        <div class="col-6">
+          <label for="productId" class="block font-bold mb-3">Producto</label>
+          <div class="p-inputgroup">
+            <input type="text" pInputText id="productId" [(ngModel)]="detalleComprobante.producto.producto_id" name="producto_id" required fluid>
+            <p-button icon="pi pi-barcode" [rounded]="true" [text]="true" severity="contrast" (click)="toggleScanner1()"></p-button>
+          </div>
+          <small class="text-red-500" *ngIf="submitted && !detalleComprobante.producto.producto_id">El ID del producto es obligatorio.</small>
+          <div *ngIf="scannerVis" class="scanner-container">
+            <zxing-scanner [formats]="allowedFormats" (scanSuccess)="onCodeScanned($event)"></zxing-scanner>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <label for="cantidad" class="block font-bold mb-3">Cantidad</label>
+          <div class="product-count flex align-items-center">
+            <button pButton icon="pi pi-minus" class="p-button-rounded p-button-secondary"  (click)="decrementarCantidad()"></button>
+            <span class="mx-3">{{ detalleComprobante.cantidad }}</span>
+            <button pButton icon="pi pi-plus" class="p-button-rounded p-button-secondary" (click)="incrementarCantidad()"></button>
+          </div>
+          <small class="text-red-500" *ngIf="submitted && !detalleComprobante.cantidad">La cantidad es obligatoria.</small>
+        </div>
+      </div>
+
+      <div class="flex col-12">
+        <div class="col-6">
+          <label for="subtotal" class="block font-bold mb-3">Subtotal</label>
+          <input type="number" pInputText id="subtotal" [(ngModel)]="detalleComprobante.subtotal" name="subtotal" required fluid>
+          <small class="text-red-500" *ngIf="submitted && !detalleComprobante.subtotal">El subtotal es obligatorio.</small>
+        </div>
+        <div class="col-6">
+          <label for="tipoPago" class="block font-bold mb-3">Tipo de Pago</label>
+          <p-select [options]="tiposPago" [(ngModel)]="detalleComprobante.tipo_pago" optionLabel="name" appendTo="body" optionValue="value" placeholder="Seleccione un tipo de pago" name="tipo_pago" required></p-select>
+          <small class="text-red-500" *ngIf="submitted && !detalleComprobante.tipo_pago">El tipo de pago es obligatorio.</small>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" icon="pi pi-times" (click)="toggleEditModal()"></p-button>
+    <p-button label="Actualizar" icon="pi pi-check" (click)="actualizarDetalleComprobante()" [disabled]="!isFormValid()"  ></p-button>
+  </ng-template>
+</p-dialog>
 
